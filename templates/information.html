@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>股票大数据可视化</title>
+</head>
+<body>
+<div class="mdui-container">
+    <div class="mdui-card">
+        <div class="mdui-card-header">
+            <img class="mdui-card-header-avatar" src="{{ url_for('static', filename='reference/熊猫.jpeg') }}"/>
+            <div class="mdui-card-header-title">股市信息获取大全</div>
+            <div class="mdui-card-header-subtitle">Information for Chinese Finance</div>
+          </div>
+      <div class="mdui-card-content">实时新闻资讯网站：<B><a href="https://tushare.pro/news">https://tushare.pro/news</a></B>
+          </div>
+        <div class="mdui-card-content">金融数据API接口文档：<B><a href="https://akshare.xyz/">https://akshare.xyz/</a></B>
+          </div>
+        <div class="mdui-card-content">知识图谱网站：<B><a href="https://www.ownthink.com/knowledge.html">https://www.ownthink.com/knowledge.html</a></B>
+          </div>
+        <div class="mdui-card-content">金十金融数据：<B><a href="https://rili.jin10.com/">https://rili.jin10.com/</a></B>
+          </div>
+        <div class="mdui-card-content">AI对话机器人：<B><a href="https://www.ownthink.com/docs/bot/">https://www.ownthink.com/docs/bot/</a></B>
+          </div>
+                <div class="mdui-card-content">AIGC大全：<B><a href="https://www.aigc520.com/">https://www.aigc520.com/</a></B>
+          </div>
+            <div class="mdui-card-content">PDF处理：<B><a href="https://xpdf.cn/">https://xpdf.cn/</a></B>
+          </div>
+
+        <div class="mdui-card-content">汇率信息：美元/人民币{{huilv}}  实时
+          </div>
+    </div>
+</div>
+</body>
+</html>
+{% endblock %}

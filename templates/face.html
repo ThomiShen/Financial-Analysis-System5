@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<html lang="en">
+<head>
+  <style>
+    .green-text {
+      color: green;
+    }
+    .upload-container {
+      border: 2px dashed #ccc;
+      border-radius: 5px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .upload-container.dragover {
+      border-color: #000;
+    }
+
+
+  </style>
+  <meta charset="UTF-8">
+  <title>股票大数据可视化</title>
+</head>
+<body>
+<div class="mdui-container">
+    <div class="mdui-card">
+        <div class="mdui-card-header">
+            <img class="mdui-card-header-avatar" src="{{ url_for('static', filename='reference/大美女5.jpg') }}"/>
+            <div class="mdui-card-header-title">无聊的人脸颜值识别系统</div>
+            <div class="mdui-card-header-subtitle">Aesthetic Face Visualization</div>
+        </div>
+        <table class="mdui-table mdui-table-hoverable">
+            <thead>
+                <tr>
+                    <th>相信在座的各位都是男生像吴彦祖，女生像刘亦菲！！！</th>
+
+                </tr>
+            </thead>
+        </table>
+        <!-- Image container -->
+        <div class="mdui-row">
+            <div class="mdui-col-xs-6">
+                <!-- First image -->
+                <img src="{{ url_for('static', filename='reference/刘德华4.jpg') }}" class="mdui-img-fluid" alt="Image 1">
+            </div>
+            <div class="mdui-col-xs-6">
+                <!-- Second image -->
+                <img src="{{ url_for('static', filename='reference/大美女1.jpg') }}" class="mdui-img-fluid" alt="Image 2">
+            </div>
+        </div>
+
+
+        <div class="upload-container" id="uploadContainer">
+          拖放图片到这里，或者 <strong>点击选择本地文件</strong>
+          <form id="fileUploadForm" action="/face" method="post" enctype="multipart/form-data" style="display: none;">
+            <input type="file" name="image" accept="image/*" id="fileInput">
+          </form>
+        </div>
+
+        <script>
+          const uploadContainer = document.getElementById('uploadContainer');
+          const fileInput = document.getElementById('fileInput');
+          uploadContainer.addEventListener('click', () => fileInput.click());
+          fileInput.addEventListener('change', () => {
+            const form = document.getElementById('fileUploadForm');
+            form.submit();
+          });
+
+          ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, e => e.preventDefault());
+          });
+
+          ['dragenter', 'dragover'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, () => uploadContainer.classList.add('dragover'));
+          });
+
+          ['dragleave', 'drop'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, () => uploadContainer.classList.remove('dragover'));
+          });
+
+          uploadContainer.addEventListener('drop', e => {
+            fileInput.files = e.dataTransfer.files;
+            const form = document.getElementById('fileUploadForm');
+            form.submit();
+          });
+        </script>
+    </div>
+</div>
+</body>
+</html>
+{% endblock %}

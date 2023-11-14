@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<style>
+    .submit-button {
+    display: block;
+    margin: 20px auto; /* 上下留20px的空间，并自动居中 */
+    text-align: center;
+}
+</style>
+<div class="mdui-container mt-4">
+    <div class="mdui-row">
+      <div class="mdui-col-md-12">
+        <div class="mdui-card">
+          <div class="mdui-card-header">
+            <img class="mdui-card-header-avatar" src="{{ url_for('static', filename='reference/童老师.JPG') }}"/>
+            <div class="mdui-card-header-title">TONG</div>
+            <div class="mdui-card-header-subtitle">校长</div>
+          </div>
+          <div class="mdui-card-media">
+            <img src="{{ url_for('static', filename='reference/桌面.jpg') }}"/>
+            <div class="mdui-card-menu">
+              <button class="mdui-btn mdui-btn-icon mdui-text-color-white"><i class="mdui-icon material-icons">share</i></button>
+            </div>
+          </div>
+          <div class="mdui-card-primary">
+            <div class="mdui-card-primary-title">金融数据分析系统</div>
+            <div class="mdui-card-primary-subtitle">Financial Analysis</div>
+          </div>
+          <div class="mdui-chip">
+      <span class="mdui-chip-icon mdui-color-blue"><i class="mdui-icon material-icons">face</i></span>
+      <span class="mdui-chip-title">子曰：</span>
+    </div>
+          <div class="mdui-card-content">「创业板不来20CM，不亦说乎？龙头战法而不为人知，而不愠，不亦君子乎？」
+          </div>
+
+<!-- Updated form to accept pasted text with Material Design style -->
+<div class="mdui-card-content">
+    <form method="post" enctype="application/x-www-form-urlencoded">
+        <div class="mdui-textfield mdui-textfield-floating-label" style="background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); border-radius: 4px; padding: 1em;">
+            <label for="textData" class="mdui-textfield-label" style="color: #bdbdbd;">请在此粘贴文本</label>
+              <textarea id="textData" name="textData" class="mdui-textfield-input" rows="4" required style="border-bottom: 1px solid #bdbdbd; color: #757575;"></textarea>
+        </div>
+        <mdui-button type="submit" class=" submit-button">提交</mdui-button>
+    </form>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}

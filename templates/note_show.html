@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+
+<html lang="en">
+<head>
+
+<link rel="stylesheet" href="https://unpkg.com/mdui@2.0.1/mdui.css">
+<script src="https://unpkg.com/mdui@2.0.1/mdui.global.js"></script>
+  <meta charset="UTF-8">
+  <title>股票大数据可视化</title>
+</head>
+
+<body>
+<div class="mdui-container">
+    <div class="mdui-card">
+        <div class="mdui-card-header">
+            <img class="mdui-card-header-avatar" src="{{ url_for('static', filename='reference/气质2.jpg') }}"/>
+            <div class="mdui-card-header-title">悟道人生</div>
+            <div class="mdui-card-header-subtitle">Das ist Leben</div>
+        </div>
+
+
+  <!-- Grid layout -->
+  <div class="mdui-row">
+    {% for article in articles %}
+      <!-- Each article takes up half the screen on medium and larger screens, full width on small screens -->
+      <mdui-card class="mdui-col-md-6 mdui-col-xs-12">
+          <!-- Article header -->
+          <div class="mdui-card-primary">
+            <div class="mdui-card-primary-title">{{ article.title }}</div>
+            <div class="mdui-card-primary-subtitle">{{ article.timestamp }}</div>
+           </div>
+
+           <div class="mdui-card-content">{{ article.content|safe }}</div>
+
+<mdui-dialog close-on-overlay-click class="example-overlay"   id="dialog-{{ loop.index }}">
+            <div class="mdui-dialog-title">{{ article.title }}</div>
+            <div class="mdui-dialog-content">{{ article.content|safe }}</div>
+            <div class="mdui-dialog-actions">
+            </div>
+</mdui-dialog>
+<mdui-fab  icon="forward" class="open-dialog-button mdui-color-red" id="dialog-{{ loop.index }}"></mdui-fab>
+  <mdui-fab icon="edit"  class="mdui-color-blue"></mdui-fab>
+</mdui-card>
+<script>
+document.querySelectorAll('.open-dialog-button').forEach(button => {
+  button.addEventListener('click', () => {
+    const dialog = button.previousElementSibling;
+     if(dialog) {
+        dialog.open = true;
+      }
+  });
+});
+
+</script>
+
+    {% endfor %}
+  </div>
+
+</div>
+</div>
+
+</body>
+
+</html>
+{% endblock %}

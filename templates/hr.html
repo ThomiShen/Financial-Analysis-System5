@@ -1,0 +1,367 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+
+<html lang="en">
+<head>
+<!-- ElementUI CSS -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- Vue.js -->
+<script src="https://unpkg.com/vue@2.6.14/dist/vue.js"></script>
+<!-- ElementUI JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/mdui@2.0.1/mdui.css">
+<script src="https://unpkg.com/mdui@2.0.1/mdui.global.js"></script>
+  <style>
+
+  /* 增加联级栏的下外边距 */
+#self {
+    margin-bottom: 50px; /* 或者您想要的空隙大小 */
+}
+    .green-text {
+      color: green;
+    }
+    .upload-container {
+      border: 2px dashed #ccc;
+      border-radius: 5px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .upload-container.dragover {
+      border-color: #000;
+    }
+
+  </style>
+  <meta charset="UTF-8">
+  <title>股票大数据可视化</title>
+</head>
+<body>
+<div class="mdui-container">
+    <div class="mdui-card">
+        <div class="mdui-card-header">
+            <img class="mdui-card-header-avatar" src="{{ url_for('static', filename='reference/气质3.jpg') }}"/>
+            <div class="mdui-card-header-title">招聘个人信息评分系统</div>
+            <div class="mdui-card-header-subtitle">HR Information System</div>
+        </div>
+        <table class="mdui-table mdui-table-hoverable">
+            <thead>
+                <tr>
+                    <th>请认真填写您的个人信息，谢谢！</th>
+
+                </tr>
+            </thead>
+        </table>
+        <!-- Image container -->
+        <div class="mdui-row">
+            <div class="mdui-col-xs-12">
+                <!-- First image -->
+
+<form action="{{ url_for('hr') }}" method="post">
+<!--   --  --  --  --  --  --  --  --  --我是分隔线姓名的  --  --  --  --  --  --  --    -->
+ <h3 class="mb-6 mdui-m-t-6">您的姓名</h3>
+ <div class="mdui-container">
+      <mdui-text-field label="你的名字" name="name" ></mdui-text-field>
+    </div>
+
+<!--   --  --  --  --  --  --  --  --  --我是分隔线年龄的  --  --  --  --  --  --  --    -->
+<h3 class="mb-6 mdui-m-t-6">您的年龄</h3>
+
+ <div class="mdui-container">
+       <mdui-slider value="22" name="age"></mdui-slider>
+    </div>
+
+  <!--   --  --  --  --  --  --  --  --  --我是分隔线性别的  --  --  --  --  --  --  --    -->
+  <h3 class="mb-6 mdui-m-t-6">您的性别</h3>
+
+ <div class="mdui-container">
+  <div class="mdui-tab mdui-color-theme-white" mdui-tab>
+    <a class="mdui-ripple mdui-ripple-white gender-option" data-gender="男性">
+      <mdui-button-icon icon="Male"></mdui-button-icon>
+      <label>男</label>
+    </a>
+    <a class="mdui-ripple mdui-ripple-white gender-option" data-gender="女性">
+        <mdui-button-icon icon="Female"></mdui-button-icon>
+      <label>女</label>
+    </a>
+  </div>
+</div>
+<!-- Hidden input field to store the gender value -->
+<input type="hidden" name="gender" id="gender-input" >
+
+    <!--   --  --  --  --  --  --  --  --  --我是分隔线学历  --  --  --  --  --  --  --    -->
+<h3 class="mb-4 mdui-m-t-4">选择您最高学历与专业</h3>
+
+<div  id="fach-selector"  class="mdui-container" >
+  <el-cascader :options="options" v-model="selected" @change="updateInput" ></el-cascader>
+</div>
+<!-- Hidden input for capturing the selected education and field -->
+  <input type="hidden" name="education" id="education-input">
+<!--   --  --  --  --  --  --  --  --  --我是分隔线工作的  --  --  --  --  --  --  --    -->
+ <h3 class="mb-6 mdui-m-t-6">您是否应届生</h3>
+
+ <div class="mdui-container">
+      <div class="mdui-tab mdui-color-theme-white" mdui-tab>
+        <a  no_work="没有" class="mdui-ripple mdui-ripple-white job-option" data-jpb="不是">
+        <mdui-button-icon icon="cancel"></mdui-button-icon>
+        <label>不是</label>
+      </a>
+       <a  work="有工作"  class="mdui-ripple mdui-ripple-white job-option"  data-job="是的">
+       <mdui-button-icon icon="accessibility"></mdui-button-icon>
+        <label>是的</label>
+      </a>
+    </div>
+    </div>
+   <input type="hidden" name="job" id="job-input" >
+<!--   --  --  --  --  --  --  --  --  --我是分隔线工作的  --  --  --  --  --  --  --    -->
+ <h3 class="mb-6 mdui-m-t-6">您现在的工作</h3>
+
+ <div class="work-container">
+<mdui-select placeholder="请认真选择" placement="top" name="work_experience">
+    <mdui-menu-item value="央国企单位">央国企单位</mdui-menu-item>
+  <mdui-menu-item value="省直属事业单位">省直属事业单位</mdui-menu-item>
+  <mdui-menu-item value="市直属事业单位">市直属事业单位</mdui-menu-item>
+   <mdui-menu-item value="事业单位/国企编外">事业单位/国企编外</mdui-menu-item>
+    <mdui-menu-item value="大厂（互联网）">大厂（互联网）</mdui-menu-item>
+    <mdui-menu-item value="大厂（非互联网）">大厂（非互联网）</mdui-menu-item>
+     <mdui-menu-item value="银行体系">银行体系</mdui-menu-item>
+     <mdui-menu-item value="私企合同制">私企合同制</mdui-menu-item>
+    <mdui-menu-item value="劳务派遣">劳务派遣</mdui-menu-item>
+    <mdui-menu-item value="灵活就业">灵活就业</mdui-menu-item>
+</mdui-select>
+    </div>
+<!--   --  --  --  --  --  --  --  --  --我是分隔线籍贯的  --  --  --  --  --  --  --    -->
+<!--        //选择您的籍贯 -->
+ <h3 class="mb-4 mdui-m-t-4">选择您的籍贯</h3>
+
+<div  id="origin-selector"  class="mdui-container" >
+
+  <el-cascader :options="options" v-model="selected"></el-cascader>
+
+</div>
+
+ <input type="hidden" name="origin" id="origin-input">
+<!--   --  --  --  --  --  --  --  --  --我是分隔线自我陈述  --  --  --  --  --  --  --    -->
+   <h3 class="mb-4 mdui-m-t-4">描述自己的性格与经历</h3>
+
+<div  id="self"  class="mdui-container" >
+    <mdui-text-field rows="5" label="至少200字"  name="personality"></mdui-text-field>
+</div>
+
+<!--   --  --  --  --  --  --  --  --  --我是分隔线按钮的  --  --  --  --  --  --  --    -->
+ <mdui-button end-icon="arrow_forward" type="submit">提交</mdui-button>
+</form>
+
+
+ <mdui-navigation-bar value="item-1" style="position: relative">
+  <mdui-navigation-bar-item icon="place"  href="{{url_for('index')}}" value="item-1">Home</mdui-navigation-bar-item>
+  <mdui-navigation-bar-item icon="people" href="{{url_for('about')}}" value="item-3">About</mdui-navigation-bar-item>
+</mdui-navigation-bar>
+
+<div></div>
+
+ </div>
+            </div>
+
+        </div>
+
+
+
+
+    </div>
+
+</body>
+<!-- Vue 和 Element UI 的脚本 -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+// Wait for the DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+  // Get all elements with the class 'gender-option'
+  var genderOptions = document.querySelectorAll('.gender-option');
+
+  // Add a click event listener to each gender option
+  genderOptions.forEach(function(option) {
+    option.addEventListener('click', function() {
+      // Retrieve the 'data-gender' attribute from the clicked element
+      var gender = this.getAttribute('data-gender');
+      // Set the value of the hidden input field to the selected gender
+      document.getElementById('gender-input').value = gender;
+      // For demonstration purposes, log the selected gender to the console
+      console.log('Selected gender:', gender);
+    });
+  });
+});
+
+// 应届生
+document.addEventListener('DOMContentLoaded', function() {
+  // Get all elements with the class 'job-option'
+  var genderOptions = document.querySelectorAll('.job-option');
+
+  // Add a click event listener to each gender option
+  genderOptions.forEach(function(option) {
+    option.addEventListener('click', function() {
+
+      var job = this.getAttribute('data-job');
+
+      document.getElementById('job-input').value = job;
+
+
+    });
+  });
+});
+
+
+
+</script>
+<script>
+    // 创建一个新的Vue实例
+new Vue({
+  // 指定Vue实例的挂载点（即该Vue实例会控制哪个DOM元素）
+  el: '#origin-selector',
+
+  // Vue实例的数据对象，存储了该实例的所有响应式数据
+  data: {
+    selected: [],      // 存储用户选择的地址（从级联选择器中）
+    options: []        // 存储级联选择器的所有选项
+  },
+
+  // watch对象用于监听data中的数据变化
+  watch: {
+   selected(newVal) {
+    const originInput = document.getElementById('origin-input');
+    if (originInput) {
+      originInput.value = newVal.join('-');
+    }
+  }
+  },
+
+  // created生命周期钩子：在Vue实例创建后立即调用
+  created() {
+    // 使用Promise.all并行请求三个JSON文件
+    Promise.all([
+      // 请求省份数据
+      fetch('{{ url_for("static", filename="location/provinces.json") }}').then(res => res.json()),
+      // 请求城市数据
+      fetch('{{ url_for("static", filename="location/cities.json") }}').then(res => res.json()),
+      // 请求区域数据
+      fetch('{{ url_for("static", filename="location/areas.json") }}').then(res => res.json())
+    ])
+    .then(([provinces, cities, areas]) => {
+      // 当所有请求完成后，使用返回的数据构造级联选择器的选项
+      this.options = provinces.map(province => {
+        return {
+          value: province.name,   // 省份的值
+          label: province.name,   // 省份的标签
+          children: cities.filter(city => city.provinceCode === province.code).map(city => {
+            return {
+              value: city.name,   // 城市的值
+              label: city.name,   // 城市的标签
+              children: areas.filter(area => area.cityCode === city.code).map(area => {
+                return {
+                  value: area.name,   // 区域的值
+                  label: area.name    // 区域的标签
+                };
+              })
+            };
+          })
+        };
+      });
+    });
+  }
+});
+
+
+</script>
+<script>
+    new Vue({
+    el: '#fach-selector',
+    data: {
+        selected: [],
+        options: [
+            {
+                value: '专科',
+                label: '专科',
+                children: [
+                    { value: '生化环材土建', label: '生化环材土建' },
+                     { value: '农学物理传媒设计', label: '农学物理传媒设计' },
+                    { value: '其他天坑', label: '其他天坑' },
+                    { value: '法律', label: '法律' },
+                    { value: '医学', label: '医学' },
+                     { value: '汉语言', label: '汉语言' },
+                    { value: '外语类', label: '外语类' },
+                     { value: '经济类', label: '经济学' },
+                    { value: '管理类', label: '管理学' },
+                    { value: '师范类', label: '师范类' },
+                    { value: '计算机', label: '计算机' },
+                    { value: '金融工程', label: '金融工程' },
+                ]
+            },
+            // 可以为以下其他学历添加相同的专业列表
+            {
+                value: '本科',
+                label: '本科',
+                children: [
+                   { value: '生化环材土建', label: '生化环材土建' },
+                     { value: '农学物理传媒设计', label: '农学物理传媒设计' },
+                    { value: '其他天坑', label: '其他天坑' },
+                    { value: '法律', label: '法律' },
+                    { value: '医学', label: '医学' },
+                     { value: '汉语言', label: '汉语言' },
+                    { value: '外语类', label: '外语类' },
+                     { value: '经济类', label: '经济学' },
+                    { value: '管理类', label: '管理学' },
+                    { value: '师范类', label: '师范类' },
+                    { value: '计算机', label: '计算机' },
+                    { value: '金融工程', label: '金融工程' },
+                ]
+            },
+            {
+                value: '硕士研究生',
+                label: '硕士研究生',
+                children: [
+                    { value: '生化环材土建', label: '生化环材土建' },
+                     { value: '农学物理传媒设计', label: '农学物理传媒设计' },
+                    { value: '其他天坑', label: '其他天坑' },
+                    { value: '法律', label: '法律' },
+                    { value: '医学', label: '医学' },
+                     { value: '汉语言', label: '汉语言' },
+                    { value: '外语类', label: '外语类' },
+                     { value: '经济类', label: '经济学' },
+                    { value: '管理类', label: '管理学' },
+                    { value: '师范类', label: '师范类' },
+                    { value: '计算机', label: '计算机' },
+                    { value: '金融工程', label: '金融工程' },
+                ]
+            },
+            {
+                value: '博士研究生',
+                label: '博士研究生',
+                children: [
+                   { value: '生化环材土建', label: '生化环材土建' },
+                     { value: '农学物理传媒设计', label: '农学物理传媒设计' },
+                    { value: '其他天坑', label: '其他天坑' },
+                    { value: '法律', label: '法律' },
+                    { value: '医学', label: '医学' },
+                     { value: '汉语言', label: '汉语言' },
+                    { value: '外语类', label: '外语类' },
+                     { value: '经济类', label: '经济学' },
+                    { value: '管理类', label: '管理学' },
+                    { value: '师范类', label: '师范类' },
+                    { value: '计算机', label: '计算机' },
+                    { value: '金融工程', label: '金融工程' },
+                ]
+            },
+        ]
+    },
+    methods: {
+        updateInput() {
+            document.getElementById("education-input").value = this.selected.join('-');
+        }
+    }
+});
+
+
+</script>
+</html>
+{% endblock %}

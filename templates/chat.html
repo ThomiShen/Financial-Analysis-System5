@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+
+<html lang="en">
+<head>
+    <style>
+
+        .bot-name {
+            display: flex;
+
+            margin-bottom: 5px;  /* 调整与消息文本之间的间距 */
+            justify-content: flex-start;
+        }
+
+                .user-name {
+            display: flex;
+            margin-bottom: 5px;  /* 调整与消息文本之间的间距 */
+            justify-content: flex-end;
+        }
+
+ .user-message, .bot-message {
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 5px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .bot-message, .user-message {
+        display: flex;
+        flex-direction: column;  /* 使得名称和消息垂直对齐 */
+        margin-bottom: 10px;
+    }
+
+        .user-message {
+              align-items: flex-end;  /* 机器人消息在左边 */
+        }
+        .bot-message {
+              align-items: flex-start;
+        }
+
+        .input-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .input-area input {
+            flex: 2;
+            margin-right: 10px;
+        }
+    </style>
+
+
+    <meta charset="UTF-8">
+    <title>聊天机器人</title>
+</head>
+<body>
+<div class="mdui-container">
+    <div class="mdui-card">
+        <div class="mdui-card-header">
+            <img class="mdui-card-header-avatar" src="{{ url_for('static', filename='reference/熊猫.jpeg') }}"/>
+            <div class="mdui-card-header-title">扯淡机器人🤖 </div>
+            <div class="mdui-card-header-subtitle">Chat with YOU！！！</div>
+        </div>
+
+        <!-- 聊天记录显示区域 -->
+        <div id="chat-box" style="height: 300px; border: 1px solid #ccc; padding: 10px; overflow-y: scroll;">
+        </div>
+
+        <!-- 输入区域 -->
+        <div class="mdui-textfield mdui-textfield-floating-label">
+            <div  class="input-area">
+            <input   class="mdui-textfield-input" type="text" id="user-input" placeholder="请输入消息..." >
+             <button class="mdui-btn mdui-btn-raised mdui-ripple" id="send-btn">send</button>
+
+</div>
+        </div>
+
+        <div class="mdui-card-content">实时聊天的一个工具，闲扯时光！！！！！
+        </div>
+
+
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+        $(document).ready(function() {
+            $('#send-btn').click(function() {
+                var message = $('#user-input').val();
+                if (message.trim() === "") {
+                    alert("消息不能为空！");
+                    return;
+                }
+                $('#chat-box').append('<div class="user-message"><div class="mdui-chip"><span class="mdui-chip-icon mdui-color-blue"><i class="mdui-icon material-icons">face</i></span><span class="mdui-chip-title">我</span></div><div class="message-container">' + message + '</div></div>');
+
+                $('#user-input').val("");
+
+                // 发送 AJAX 请求
+                $.post("/chat", { message: message }, function(data) {
+                    var reply = data.reply;
+                    $('#chat-box').append('<div class="bot-message"><div class="mdui-chip"><span class="mdui-chip-icon mdui-color-red"><i class="mdui-icon material-icons">android</i></span><span class="mdui-chip-title">星火</span></div><div class="message-container">' + reply + '</div></div>');
+       });
+            });
+        });
+    </script>
+
+</body>
+</html>
+{% endblock %}

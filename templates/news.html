@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<html lang="en" >
+<head>
+    <style>
+        .green-text {
+            color: green;
+        }
+        .card-image {
+            width: 100%; /* 或者你想要的任何宽度 */
+            height: auto;
+            border-radius: 5px; /* 如果你想要圆角边框 */
+        }
+        .info-card {
+            margin-bottom: 15px;
+        }
+        .info-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .info-value {
+            font-size: 14px;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <title>股票大数据可视化</title>
+</head>
+<body>
+<div class="mdui-container">
+    <div class="mdui-card">
+ <div class="mdui-card-header">
+            <img class="mdui-card-header-avatar" src="{{ url_for('static', filename='reference/大美女5.jpg') }}"/>
+            <div class="mdui-card-header-title">中国实时热点信息展示系统</div>
+            <div class="mdui-card-header-subtitle">China Popular Information Visualization System</div>
+        </div>
+<div style="position: relative">
+  <mdui-navigation-rail divider contained>
+    <!-- 添加 onclick 事件来切换内容 -->
+    <mdui-navigation-rail-item icon="book" onclick="switchContent('news')">News</mdui-navigation-rail-item>
+    <mdui-navigation-rail-item icon="directions_car" onclick="switchContent('cars')">Cars</mdui-navigation-rail-item>
+    <mdui-navigation-rail-item icon="record_voice_over" onclick="switchContent('weibos')">Weibo</mdui-navigation-rail-item>
+     <mdui-navigation-rail-item icon="sentiment_very_dissatisfied" onclick="switchContent('airs')">Air-Poll</mdui-navigation-rail-item>
+  </mdui-navigation-rail>
+
+  <!-- 主内容区域 -->
+  <div style="height: 500px;overflow: auto">
+    <!-- 容器用于显示不同的内容模块 -->
+    <div id="news" class="content-section">
+          <!-- NEWS数据可视化的卡片 -->
+  <div class="mdui-row">
+    {% for new in news %}
+      <!-- Each article takes up half the screen on medium and larger screens, full width on small screens -->
+      <mdui-card class="mdui-col-md-6 mdui-col-xs-12">
+          <!-- Article header -->
+          <div class="mdui-card-primary">
+{% set title_cleaned = new.title.split('】')[-1].split('——')[-1].split('：')[-1].split(' ')[-1].split('评价')[-1].strip() %}
+                 {%if  title_cleaned|length > 16 %}
+        <div class="mdui-card-primary-title">{{ title_cleaned[:16] }}...</div>
+               {%else%}
+      <div class="mdui-card-primary-title">{{ title_cleaned}}</div>
+              {% endif %}
+            <div class="mdui-card-primary-subtitle">{{ new.date }}</div>
+           </div>
+            {%if  new.content|length > 100 %}
+           <div class="mdui-card-content">{{ new.content[:100]|safe }}...</div>
+           {%else%}
+          <div class="mdui-card-content">{{ new.content|safe }}{{ '空' * (100 - new.content|length)}}</div>
+            {% endif %}
+<mdui-dialog close-on-overlay-click class="example-overlay"   id="dialog-{{ loop.index }}">
+            <div class="mdui-dialog-title">{{ new.title.split('】')[-1].split('——')[-1].split('：')[-1].split(' ')[-1].split('评价')[-1].strip()}}</div>
+            <div class="mdui-dialog-content">{{ new.content|safe }}</div>
+            <div class="mdui-dialog-actions">
+            </div>
+</mdui-dialog>
+<mdui-fab  icon="forward" class="open-dialog-button mdui-color-surface-tint-color-dark" id="dialog-{{ loop.index }}"></mdui-fab>
+</mdui-card>
+<script>
+document.querySelectorAll('.open-dialog-button').forEach(button => {
+  button.addEventListener('click', () => {
+    const dialog = button.previousElementSibling;
+     if(dialog) {
+        dialog.open = true;
+      }
+  });
+});
+
+</script>
+
+    {% endfor %}
+  </div>
+    </div>
+    <div id="cars" class="content-section" style="display: none;">
+    <div class="mdui-row">
+        <table class="mdui-table mdui-table-hoverable">
+            <!-- 表头 -->
+            <thead>
+                <tr>
+                    <th>车型</th>
+                    <th>今年销量</th>
+                    <th>去年销量</th>
+                </tr>
+            </thead>
+            <!-- 表内容 -->
+            <tbody>
+                {% for car in cars %}
+                <tr class="{{ loop.cycle('mdui-color-pink-100', '') }}">
+                    <td>{{ car[0] }}</td> <!-- 假设车型数据在 'model' 键中 -->
+                    <td>{{  car[1]  }}</td> <!-- 假设今年销量数据在 'sales_this_year' 键中 -->
+                    <td>{{  car[2]  }}</td> <!-- 假设去年销量数据在 'sales_last_year' 键中 -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+    <div id="weibos" class="content-section" style="display: none;">微博舆论内容...</div>
+    <div id="airs" class="content-section" style="display: none;">
+         <div class="mdui-row">
+        <table class="mdui-table mdui-table-hoverable">
+
+            <!-- 地图容器 -->
+        <div id="map_container" style="width: 100%; height: 400px;">
+            {{ maps|safe }}
+        </div>
+
+            <!-- 表头 -->
+            <thead>
+                <tr>
+                    <th>省份</th>
+                    <th>城市</th>
+                    <th>空气指数</th>
+                    <th>空气质量</th>
+                </tr>
+            </thead>
+            <!-- 表内容 -->
+            <tbody>
+                {% for air in airs %}
+                <tr class="{{ loop.cycle('mdui-color-blue-50', '') }}">
+                    <td>{{ air[1] }}</td>
+                    <td>{{  air[2]  }}</td>
+                    <td>{{  air[3]  }}</td>
+                     <td>{{  air[4]  }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// JavaScript 函数用于切换显示的内容
+function switchContent(section) {
+  // 隐藏所有内容
+  document.querySelectorAll('.content-section').forEach(function(el) {
+    el.style.display = 'none';
+  });
+
+  // 显示点击的内容
+  document.getElementById(section).style.display = 'block';
+}
+</script>
+
+    </div>
+</div>
+</body>
+</html>
+{% endblock %}

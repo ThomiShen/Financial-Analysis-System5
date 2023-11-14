@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block page_content %}
+<head>
+ <style>
+    pre {
+        white-space: pre-wrap;
+        white-space: -moz-pre-wrap;
+        white-space: -pre-wrap;
+        white-space: -o-pre-wrap;
+        word-wrap: break-word;
+    }
+
+    .no-style-link {
+        text-decoration: none;  /* 移除下划线 */
+        color: inherit;         /* 使用父元素的颜色 */
+    }
+    .no-style-link:hover {
+        text-decoration: underline;  /* 鼠标悬停时显示下划线 */
+    }
+    .pink-button{
+     background-color: #f82506    !important;
+     color: white       !important;  // 如果需要的话，也可以设置按钮文字颜色
+    }
+
+ </style>
+</head>
+
+<div class="mdui-container mdui-m-t-2">
+<form action="/visualization" method="post">
+    {% for industry, stocks in content.items() %}
+        <div class="mdui-panel" mdui-panel>
+            <div class="mdui-panel-item">
+                <div class="mdui-panel-item-header">{{ industry }}</div>
+                <div class="mdui-panel-item-body">
+                    {% for con in stocks %}
+                        <div class="mdui-card">
+                            <div class="mdui-row">
+                                <!-- 左侧基本信息 -->
+                                <div class="mdui-col-md-6 mdui-col-sm-6">
+                                    <div class="mdui-card-primary">
+                                        <a class="mdui-card-primary-title no-style-link" href="{{ url_for('zhifudaima_detail', zhifudaima_code=con[1]) }}"><B>{{con[0]}}</B></a>
+                                        <div class="mdui-card-primary-subtitle">{{con[1]}}</div><input type="checkbox" name="selected_stocks" value="{{con[1]}}">
+                                    </div>
+                                    <div class="mdui-card-content">
+                                        <p>行业：{{con[2]}}</p>
+                                        <p>{{con[3]}}</p>
+                                    </div>
+                                </div>
+                                <!-- 右侧图片 -->
+                                <div class="mdui-col-md-6 mdui-col-sm-6">
+                                    <div class="mdui-card-media">
+                                        <img src="data:image/png;base64,{{ con[4] }}" alt="用户图片" style="max-width: 100%; height: auto;"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+        <button type="submit" class="mdui-btn mdui-btn-raised mdui-color-theme mdui-ripple">查看走势</button>
+    <a href="{{ url_for('index') }}" class="mdui-btn mdui-btn-raised mdui-color-theme-accent mdui-ripple  pink-button" >返回首页</a>
+</form>
+    </div>
+</div>
+
+<script>
+
+     function saveSelectedStocksToLocalStorage() {
+    var selectedStocks = [];
+    var checkboxes = document.querySelectorAll("input[name='selected_stocks']:checked");
+    checkboxes.forEach(function(checkbox) {
+      selectedStocks.push(checkbox.value);
+    });
+    localStorage.setItem("selectedStocks", JSON.stringify(selectedStocks));
+  }
+</script>
+{% endblock %}

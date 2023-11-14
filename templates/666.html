@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html class="mdui-theme-auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Finance Analysis System</title>
+    <link rel="stylesheet" href="https://unpkg.com/mdui@2.0.1/mdui.css">
+     <script src="https://unpkg.com/mdui@2.0.1/mdui.global.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/mdui@1.0.2/dist/css/mdui.min.css" />
+    <script src="https://unpkg.com/mdui@1.0.2/dist/js/mdui.min.js"></script>
+    <style>
+
+.mdui-theme-dark {
+  color: #fff;
+  background-color: #000;
+}
+
+@media (prefers-color-scheme: dark) {
+  .mdui-theme-auto {
+    color: #fff;
+    background-color: #000;
+  }
+}
+
+
+
+
+
+
+
+#searchCard {
+    width: 100%; /* 使其与navbar的宽度相同 */
+    backdrop-filter: blur(10px); /* 毛玻璃效果 */
+<!--    background-color: rgba(255, 255, 255, 0.2); /* 半透明的背景 */-->
+    border: 1px solid rgba(255, 255, 255, 0.3); /* 浅色的边框 */
+    border-radius: 25px; /* 圆角 */
+    padding: 10px 20px; /* 内部填充 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* 轻微的阴影 */
+    transition: all 0.3s; /* 平滑的过渡效果 */
+    position: absolute; /* 使用绝对定位 */
+    top: 60px; /* 将其放在navbar下方 */
+    left: 0; /* 使其与容器左侧对齐 */
+    z-index: 1000; /* 确保它在其他内容之上 */
+     background-color: rgba(255, 255, 255, 0.7); /* 白色背景，70% 不透明度 */
+
+}
+#searchCard:hover {
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 悬停时的阴影效果 */
+}
+
+
+
+
+
+
+    </style>
+</head>
+<body >
+<div class="example-order1">
+ <mdui-bottom-app-bar style="position: relative;">
+  <mdui-button-icon icon="menu" class="open3" value="item-2"></mdui-button-icon>
+  <mdui-button-icon icon="search" id="searchButton"></mdui-button-icon>
+  <mdui-button-icon icon="mic"></mdui-button-icon>
+  <mdui-button-icon icon="image"></mdui-button-icon>
+  <div style="flex-grow: 1"></div>
+  <mdui-fab icon="add"></mdui-fab>
+ <div id="searchCard" class="mdui-card" style="display:none;">
+    <div class="mdui-card-content">
+        <div class="mdui-textfield">
+            <input class="mdui-textfield-input" type="text" id="searchInput" placeholder="请输入股票代码或者名称"/>
+        </div>
+         <a id="submitSearch" class="mdui-btn mdui-btn-icon mdui-ripple mdui-hidden-xs-down"><i class="mdui-icon material-icons">search</i></a>
+        </div>
+</div>
+</mdui-bottom-app-bar>
+
+<mdui-layout class="example-order">
+<!-- Navbar -->
+<div class="example-placement" >
+ <mdui-navigation-bar value="item-1"
+    scroll-behavior="hide">
+  <mdui-navigation-bar-item icon="home" href="{{ url_for('index') }}" value="item-1">Home</mdui-navigation-bar-item>
+  <mdui-navigation-bar-item icon="menu" class="open2" value="item-2">Funktion</mdui-navigation-bar-item>
+  <mdui-navigation-bar-item icon="book"  href="{{ url_for('news') }}"value="item-3">News</mdui-navigation-bar-item>
+  <mdui-navigation-bar-item icon="info" href="{{ url_for('about') }}" value="item-3">Info</mdui-navigation-bar-item>
+</mdui-navigation-bar>
+
+<mdui-top-app-bar >
+<!--     <mdui-button class="open1">打开侧边抽屉栏</mdui-button>-->
+    <mdui-top-app-bar-title>Finance Analysis System</mdui-top-app-bar-title>
+  <div style="flex-grow: 1"></div>
+   <a href="javascript:;" id="musicIconBtn" class="mdui-btn mdui-btn-icon mdui-ripple mdui-hidden-xs-down"><i class="mdui-icon material-icons">music_note</i></a>
+    <a href="{{url_for('about')}}" class="mdui-btn mdui-btn-icon mdui-ripple mdui-hidden-xs-down"><i class="mdui-icon material-icons">info</i></a>
+    <!--        ########searchCard-->
+
+</mdui-top-app-bar>
+
+
+<!-- Drawer -->
+
+<mdui-navigation-drawer id="main-drawer" placement="left" modal close-on-esc close-on-overlay-click contained>
+    <ul class="mdui-list mdui-collapse">
+        <li class="mdui-list-item mdui-ripple">
+            <i class="mdui-list-item-icon mdui-icon material-icons">airplay</i>
+            <a href="{{url_for('index')}}" class="mdui-list-item-content">Home</a>
+        </li>
+
+        <!----   --   --   --   --   --       --  --     --    #笔记功能--   --   --   --   --   --   --   --   --   -->
+        <li class="mdui-collapse-item mdui-ripple">
+            <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                <i class="mdui-list-item-icon mdui-icon material-icons">event_note</i>
+                <div class="mdui-list-item-content">Notes</div>
+                <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+            </div>
+            <div class="mdui-collapse-item-body mdui-list">
+                <a href="{{url_for('login')}}" class="mdui-list-item mdui-ripple">Login</a>
+                 {% if session.logged_in %}
+                <a href="{{url_for('note')}}" class="mdui-list-item mdui-ripple">Note</a>
+                 {% endif %}
+                <a href="{{url_for('note_show')}}" class="mdui-list-item mdui-ripple">Show</a>
+            </div>
+        </li>
+        <!-- 音乐下拉菜单部分 -->
+        <li class="mdui-collapse-item mdui-ripple">
+            <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
+                <i class="mdui-list-item-icon mdui-icon material-icons">headset</i>
+                <div class="mdui-list-item-content">Musik</div>
+                <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+            </div>
+            <div class="mdui-collapse-item-body mdui-list">
+                <a href="javascript:;" class="mdui-list-item mdui-ripple" data-src="{{ url_for('static', filename='audio/光的方向.mp3') }}">光的方向</a>
+                <a href="javascript:;" class="mdui-list-item mdui-ripple" data-src="{{ url_for('static', filename='audio/天后.mp3') }}">天后</a>
+                <a href="javascript:;" class="mdui-list-item mdui-ripple" data-src="{{ url_for('static', filename='audio/消失的她.mp3') }}">消失的她</a>
+            </div>
+            <li class="mdui-list-item mdui-ripple"  onclick="toggleNavbarColor()">
+            <i class="mdui-list-item-icon mdui-icon material-icons">all_inclusive</i>
+            <a  class="mdui-list-item-content">Change Color</a>
+        </li>
+        <li class="mdui-list-item mdui-ripple"  >
+            <i class="mdui-list-item-icon mdui-icon material-icons">brightness_low</i>
+            <a  href="{{url_for('visualization')}}" class="mdui-list-item-content">Visualization</a>
+        </li>
+
+        <!--        ########Trend-->
+          <li class="mdui-list-item mdui-ripple"  >
+            <i class="mdui-list-item-icon mdui-icon material-icons">call_made</i>
+            <a  href="{{url_for('trend')}}" class="mdui-list-item-content">Trend</a>
+        </li>
+
+       <!--        ########Chat-->
+          <li class="mdui-list-item mdui-ripple"  >
+            <i class="mdui-list-item-icon mdui-icon material-icons">chat_bubble</i>
+            <a  href="{{url_for('chat')}}" class="mdui-list-item-content">Chat</a>
+        </li>
+
+
+               <!--        ########人脸识别-->
+          <li class="mdui-list-item mdui-ripple"  >
+            <i class="mdui-list-item-icon mdui-icon material-icons">tag_faces</i>
+            <a  href="{{url_for('face')}}" class="mdui-list-item-content">Face Recognition</a>
+         </li>
+
+                    <!--        ########HR信息系统-->
+          <li class="mdui-list-item mdui-ripple"  >
+            <i class="mdui-list-item-icon mdui-icon material-icons">account_box</i>
+            <a  href="{{url_for('hr')}}" class="mdui-list-item-content">HR System</a>
+         </li>
+
+        <!--        ########NEWS-->
+          <li class="mdui-list-item mdui-ripple"  >
+         <i class="mdui-list-item-icon mdui-icon material-icons">assistant</i>
+            <a   class="mdui-list-item-content">News</a>
+        </li>
+
+<!--        ########Information-->
+          <li class="mdui-list-item mdui-ripple"  >
+            <i class="mdui-list-item-icon mdui-icon material-icons">cloud_circle</i>
+            <a  href="{{url_for('information')}}" class="mdui-list-item-content">Information</a>
+        </li>
+
+        <li class="mdui-list-item mdui-ripple">
+            <i class="mdui-list-item-icon mdui-icon material-icons">face</i>
+            <a href="{{url_for('about')}}" class="mdui-list-item-content">about us</a>
+        </li>
+    </ul>
+</mdui-navigation-drawer>
+
+</div>
+
+
+<mdui-layout-main class="example-layout-main" >
+ <div class="mdui-card">
+        <div class="mdui-card-header">
+            <img class="mdui-card-header-avatar" src="{{ url_for('static', filename='reference/大美女5.jpg') }}"/>
+            <div class="mdui-card-header-title">中国实时热点信息展示系统</div>
+            <div class="mdui-card-header-subtitle">China Popular Information Visualization System</div>
+        </div>
+
+<div style="position: relative">
+  <mdui-navigation-rail divider contained>
+    <!-- 添加 onclick 事件来切换内容 -->
+      <mdui-icon-car-rental></mdui-icon-car-rental>
+    <mdui-navigation-rail-item icon="book" onclick="switchContent('recent')">Recent</mdui-navigation-rail-item>
+    <mdui-navigation-rail-item icon="directions_car" onclick="switchContent('images')">Images</mdui-navigation-rail-item>
+    <mdui-navigation-rail-item icon="record_voice_over" onclick="switchContent('library')">Library</mdui-navigation-rail-item>
+  </mdui-navigation-rail>
+
+  <!-- 主内容区域 -->
+  <div style="height: 500px;overflow: auto">
+    <!-- 容器用于显示不同的内容模块 -->
+    <div id="recent" class="content-section">最近的内容...</div>
+    <div id="images" class="content-section" style="display: none;">图片内容...</div>
+    <div id="library" class="content-section" style="display: none;">图书馆内容...</div>
+  </div>
+</div>
+
+<script>
+// JavaScript 函数用于切换显示的内容
+function switchContent(section) {
+  // 隐藏所有内容
+  document.querySelectorAll('.content-section').forEach(function(el) {
+    el.style.display = 'none';
+  });
+
+  // 显示点击的内容
+  document.getElementById(section).style.display = 'block';
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+</mdui-layout-main>
+
+ </mdui-layout>
+
+
+<audio id="audioPlayer" style="display:none;" data-current-index="0">
+    <source id="audioSource" src="" type="audio/mp3">
+</audio>
+<script>
+//为了确保它被初始化，可以在 JavaScript 中明确地这样做new mdui.Collapse('.mdui-collapse');
+new mdui.Collapse('.mdui-collapse');
+document.addEventListener("DOMContentLoaded", function() {
+    // 初始化侧边栏
+    var inst = new mdui.Drawer('#drawer');
+
+    // 初始化下拉菜单
+    const collapse = new mdui.Collapse('#songs-collapse-item');
+    // 为歌曲列表项添加点击事件，点击时播放歌曲
+    document.querySelectorAll('.mdui-collapse-item-body .mdui-list-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const audioSrc = item.getAttribute('data-src');
+            document.getElementById('audioSource').src = audioSrc;
+            const audioPlayer = document.getElementById('audioPlayer');
+            audioPlayer.load();
+            audioPlayer.play();
+        });
+    });
+
+    // 获取音乐按钮和音乐播放器
+    const musicIconBtn = document.getElementById('musicIconBtn');
+    const audioPlayer = document.getElementById('audioPlayer');
+
+    // 定义歌曲列表
+    const songs = [
+        "{{ url_for('static', filename='audio/光的方向.mp3') }}",
+        "{{ url_for('static', filename='audio/天后.mp3') }}",
+        "{{ url_for('static', filename='audio/消失的她.mp3') }}"
+    ];
+
+    // 添加点击事件监听器
+    musicIconBtn.addEventListener('click', function() {
+        // 获取当前歌曲索引
+        let currentIndex = parseInt(audioPlayer.getAttribute('data-current-index'), 10);
+
+        // 切换到下一首歌
+        currentIndex = (currentIndex + 1) % songs.length;
+        document.getElementById('audioSource').src = songs[currentIndex];
+        audioPlayer.setAttribute('data-current-index', currentIndex);
+
+        // 重新加载并播放
+        audioPlayer.load();
+        audioPlayer.play();
+    });
+});
+
+
+ function toggleNavbarColor() {
+        const navbar = document.querySelector(".mdui-toolbar");
+        if (navbar.classList.contains("mdui-color-black")) {
+            navbar.classList.remove("mdui-color-black");
+            navbar.classList.add("mdui-color-theme");
+        } else {
+            navbar.classList.remove("mdui-color-theme");
+            navbar.classList.add("mdui-color-black");
+        }
+    };
+
+<!--进行了搜索栏的数据获取-->
+ document.getElementById('searchButton').addEventListener('click', function() {
+    // 如果当前是显示状态，就隐藏它；否则显示它
+    if (getComputedStyle(searchCard).display === 'block') {
+        searchCard.style.display = 'none';
+    } else {
+        searchCard.style.display = 'block';
+    }
+});
+
+document.getElementById('submitSearch').addEventListener('click', function() {
+    const query = document.getElementById('searchInput').value;
+
+    // 将查询发送到后端 (这里假设你的后端URL是 /search，并期望一个名为query的查询参数)
+    window.location.href = `/search?query=${query}`;
+});
+
+</script>
+<!--    导航栏开关-->
+<script>
+  const example = document.querySelector(".example-order");
+  const navigationDrawer = example.querySelector("mdui-navigation-drawer");
+  const openButton = example.querySelector(".open1");
+  openButton.addEventListener("click", () => navigationDrawer.open = true);
+
+</script>
+
+<script>
+  const example2 = document.querySelector(".example-order");
+  const navigationDrawer2 = example2.querySelector("mdui-navigation-drawer");
+  const openButton2 = example2.querySelector(".open2");
+  openButton2.addEventListener("click", () => navigationDrawer.open = true);
+
+</script>
+
+<script>
+  const example3 = document.querySelector(".example-order1");
+  const navigationDrawer3 = example3.querySelector("mdui-navigation-drawer");
+  const openButton3 = example3.querySelector(".open3");
+  openButton3.addEventListener("click", () => navigationDrawer3.open = true);
+
+</script>
+    </div>
+</body>
+</html>

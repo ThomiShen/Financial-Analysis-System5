@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<html lang="en">
+<head>
+  <style>
+   .green-text {
+    color: green;
+}
+
+    </style>
+    <meta charset="UTF-8">
+    <title>股票大数据可视化</title>
+</head>
+<body>
+<div class="mdui-container">
+    <div class="mdui-card">
+        <div class="mdui-card-header">
+            <img class="mdui-card-header-avatar" src="{{ url_for('static', filename='reference/同花顺.jpeg') }}"/>
+            <div class="mdui-card-header-title">同花顺热点概念在线展示</div>
+            <div class="mdui-card-header-subtitle">THS Information Visualization</div>
+        </div>
+
+        <table class="mdui-table mdui-table-hoverable">
+            <thead>
+                <tr>
+                    <th>日期</th>
+                    <th>概念名称</th>
+                    <th>成分股数量</th>
+                    <th>网址</th>
+                    <th>代码</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for index, con in concept.iterrows() %}
+                    <tr>
+                        <td><B>{{ con['日期'] }}</B></td>
+                        <td class="green-text">{{ con['概念名称'] }}</td>
+                        <td>{{ con['成分股数量'] }}</td>
+                        <td><a href="{{ con['网址'] }}" target="_blank">{{ con['网址'] }}</a></td>
+                        <td>{{ con['代码'] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
+{% endblock %}

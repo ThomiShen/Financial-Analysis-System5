@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+
+<html lang="en">
+<head>
+<style>
+    .flex-container {
+        display: flex;
+        align-items: center;  /* 垂直居中对齐内容 */
+    }
+    .flex-container .flex-text {
+        flex: 1;  /* 使用可用空间的全部宽度 */
+        padding: 15px;  /* 为文字部分添加一些填充 */
+    }
+    .flex-container .flex-image {
+        width: 50%;  /* 图片部分的宽度 */
+        padding: 15px;  /* 为图片部分添加一些填充 */
+    }
+
+    .red-text {
+    color: red;
+}
+
+.green-text {
+    color: green;
+}
+</style>
+
+    <meta charset="UTF-8">
+    <title>股票大数据可视化</title>
+</head>
+<body>
+<div class="mdui-container">
+    <div class="mdui-card">
+        <div class="mdui-card-header">
+            <img class="mdui-card-header-avatar" src="{{ url_for('static', filename='reference/牛牛.jpg') }}"/>
+            <div class="mdui-card-header-title">股市可视化分析图表</div>
+            <div class="mdui-card-header-subtitle">Visualization</div>
+          </div>
+
+{% if selected_stocks %}
+<div class="mdui-card-content">
+    <h1>选取股票大全</h1>
+    </div>
+
+   {% for stock in selected_stocks %}
+    <div class="mdui-card">
+        <div class="flex-container">
+            <!-- 文字部分 -->
+            <div class="flex-text">
+                <h4>{{ stock[0].name }}</h4>
+                <p>{{ stock[0].code }}</p>
+                <p>行业：{{ stock[0].business }}</p>
+                <p>总市值: {{ stock[0].all_value }}</p>
+                <p>流通市值: {{ stock[0].flow_value }}</p>
+                <p>60日涨跌幅: {{ stock[0].updown_60day[0] }}%</p>
+{% if  stock[2]>15 %}
+                 <p class="red-text">20日大盘体面指数: {{ stock[2] }}分</p>
+{% else %}
+    <p class="green-text">20日大盘体面指数: {{ stock[2] }}分</p>
+{% endif %}
+{% if  stock[3]>5 %}
+                 <p class="red-text">5日大盘体面指数: {{ stock[3] }}分</p>
+{% else %}
+    <p class="green-text">5日大盘体面指数: {{ stock[3] }}分</p>
+{% endif %}
+            </div>
+
+            <!-- 图片部分 -->
+            <div class="flex-image">
+                <img src="data:image/png;base64,{{stock[1]}}" alt="用户图片" style="max-width: 100%; height: auto;"/>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+
+{% endif %}
+        <div class="mdui-card-content">「创业板不来20CM，不亦说乎？龙头战法而不为人知，而不愠，不亦君子乎？」
+          </div>
+    </div>
+    <div class="mdui-m-t-3">
+        <a onclick="goBack()" class="mdui-btn mdui-btn-raised mdui-color-theme mdui-ripple">返回上一页</a>
+    </div>
+</div>
+
+
+</body>
+</html>
+
+<script>
+function goBack() {
+     location.href = "{{ url_for('result') }}";  // Redirect to the 'zhifudaima' route
+};
+window.onload = function() {
+    var selectedStocks = JSON.parse(localStorage.getItem("selectedStocks") || "[]");
+    // Do something with selectedStocks, e.g., display them on the page
+    console.log("Loaded from localStorage:", selectedStocks);
+
+};
+</script>
+{% endblock %}

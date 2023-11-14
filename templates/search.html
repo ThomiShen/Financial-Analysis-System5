@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<html lang="zh">
+<head>
+    <style>
+
+    /* 毛玻璃效果 */
+.blur-effect {
+    background: rgba(255, 255, 255, 0.2); /* 背景颜色，可调整透明度 */
+    backdrop-filter: blur(10px); /* 模糊值 */
+    -webkit-backdrop-filter: blur(10px); /* WebKit浏览器的兼容性 */
+}
+   .main-container {
+              display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+        }
+
+ .flex-text,  .flex-box {
+width: 48%;  /* slightly less than half to account for any potential padding/margin */
+    border-radius: 15px;
+    padding: 20px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+     min-height: 400px;  /* or any other value that looks good */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+        }
+
+    .main-container > div {
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+        .red-text {
+            color: red;
+        }
+
+        .green-text {
+            color: green;
+        }
+
+@media (max-width: 768px) {
+            .main-container {
+               flex-direction: column; /* Stack the children vertically */
+     }
+            .flex-text, .flex-box {
+        width: 100%; /* Take full width on smaller screens */
+        min-height: auto; /* Reset the min-height */
+        height: 550px;
+    }
+        }
+    </style>
+    <meta charset="UTF-8">
+    <title>股票大数据可视化</title>
+</head>
+<body onload="getRandomImage()">
+<div class="mdui-container">
+    <div class="mdui-card">
+        <!-- 独立的卡片头部 -->
+        <div class="mdui-card-header">
+            <img class="mdui-card-header-avatar" src="{{ url_for('static', filename='reference/同花顺.jpeg') }}"/>
+            <div class="mdui-card-header-title">个股信息大全展示</div>
+            <div class="mdui-card-header-subtitle">Financial Analysis Visualization</div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="main-container">
+            <!-- 左上：文本内容 -->
+            <div class="flex-text mdui-card">
+               <p><strong>代码:</strong> {{ query['代码'] }}</p>
+                    <p><strong>名称:</strong> {{ query['名称'] }}</p>
+                    <p><strong>最新价:</strong> {{ query['最新价'] }}</p>
+                    {% if  query['涨跌幅']>0 %}
+                     <p class="red-text"><strong >涨跌幅:</strong> {{ query['涨跌幅'] }}%</p>
+                    {% else %}
+                    <p class="green-text"><strong >涨跌幅:</strong> {{ query['涨跌幅'] }}%</p>
+                    {% endif %}
+                    <p><strong>成交量:</strong> {{ round(query['成交量']/10000,2) }}万手</p>
+                    <p><strong>换手率:</strong> {{ query['换手率'] }}%</p>
+                    <p><strong>总市值:</strong> {{ round(query['总市值']/100000000,2) }}亿</p>
+                    <p><strong>流通市值:</strong> {{ round(query['流通市值']/100000000,2) }}亿</p>
+                    <p><strong>市盈率:</strong> {{ query['市盈率-动态'] }}</p>
+                    <p><strong>60日涨跌幅:</strong> {{ query['60日涨跌幅'] }}%</p>
+                    <p><strong>年初至今涨跌幅:</strong> {{ query['年初至今涨跌幅'] }}%</p>
+                    {% if  score_20>15 %}
+                    <p class="red-text"><strong >20日体面指数:</strong> {{ score_20 }}</p>
+                    {% else %}
+                    <p class="green-text"><strong >20日体面指数:</strong> {{ score_20 }}</p>
+                    {% endif %}
+                    {% if  score_5>5 %}
+                    <p  class="red-text"><strong>5日体面指数:</strong> {{ score_5 }}</p>
+                    {% else %}
+                    <p class="green-text"><strong >5日体面指数:</strong> {{ score_5 }}</p>
+                    {% endif %}
+            </div>
+            <!-- 右上：图片展示 -->
+            <div class="flex-box mdui-card blur-effect">
+                 <div id="echartContainer2" style="width: 100%;height:100%;"></div>
+               </div>
+            <!-- 左中 -->
+            <div class="flex-box mdui-card blur-effect">
+                <div id="echartContainer" style="width: 100%;height:100%;"></div>
+            </div>
+            <!-- 右中 -->
+            <div class="flex-box mdui-card blur-effect">
+                <div id="echartContainer3" style="width: 100%;height:100%;"></div>
+            </div>
+             <!-- 左下 -->
+            <div class="flex-box mdui-card blur-effect">
+                <div  style="width: 100%;height:100%;"><p>{{k_data}}</p>
+                <p>{{closing_prices4 }}</p></div>
+            </div>
+            <!-- 右下 -->
+            <div class="flex-box mdui-card blur-effect">
+                <div id="echartContainer5" style="width: 100%;height:100%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.3.0/echarts.min.js"></script>
+<script>
+  var myChart = echarts.init(document.getElementById('echartContainer'));
+// 使用Jinja2从后端获取数据
+  var dates = {{ zs[0]|tojson }};
+  var values = {{ zs[1]|tojson }};
+  var volumes = {{ zs[2]|tojson }};
+  var avgVolume = volumes.reduce((acc, val) => acc + val, 0) / volumes.length;
+
+
+option = {
+      title: {
+          text: '对应指数近30日走势'
+      },
+      tooltip: {
+          trigger: 'axis'
+      },
+      xAxis: {
+          type: 'category',
+          data: dates
+      },
+      yAxis: {
+          type: 'value'
+      },
+      series: [{
+    name: '收盘价',
+    data: values,
+    type: 'line',
+    smooth: true,           // 使线条平滑
+    symbol: 'circle',       // 定义数据点的形状
+    symbolSize: 1,          // 定义数据点的大小
+    itemStyle: {
+        color: '#FF5733',   // 设置线条颜色
+        borderWidth: 1,     // 定义数据点的边框宽度
+
+    }
+},
+{
+    name: '成交量',
+    data: volumes,
+    type: 'bar',
+    itemStyle: {
+                color: function(params) {
+                    return params.value > avgVolume ? '#FF5733' : '#00A857';
+                }
+            }
+}]
+  };
+
+myChart.setOption(option);
+
+// 窗口大小变化时，使图表自适应
+  window.addEventListener('resize', function() {
+      myChart.resize();
+  });
+
+
+
+
+</script>
+<script>
+var myChart = echarts.init(document.getElementById('echartContainer2'));
+// 使用Jinja2从后端获取数据
+  var dates = {{ gegu[0]|tojson }};
+  var values = {{ gegu[1]|tojson }};
+  var volumes = {{ gegu[2]|tojson }};
+  var avgVolume = volumes.reduce((acc, val) => acc + val, 0) / volumes.length;
+
+
+option = {
+      title: {
+          text: '个股股价最近30日走势'
+      },
+      tooltip: {
+          trigger: 'axis'
+      },
+      xAxis: {
+          type: 'category',
+          data: dates
+      },
+      yAxis: {
+          type: 'value'
+      },
+      series: [{
+    name: '收盘价',
+    data: values,
+    type: 'line',
+    smooth: true,           // 使线条平滑
+    symbol: 'circle',       // 定义数据点的形状
+    symbolSize: 1,          // 定义数据点的大小
+    itemStyle: {
+        color: '#FF5733',   // 设置线条颜色
+        borderWidth: 1,     // 定义数据点的边框宽度
+
+    }
+},
+{
+    name: '换手率%',
+    data: volumes,
+    type: 'bar',
+    itemStyle: {
+                color: function(params) {
+                    return params.value > avgVolume ? '#FF5733' : '#00A857';
+                }
+            }
+}]
+  };
+
+myChart.setOption(option);
+
+// 窗口大小变化时，使图表自适应
+  window.addEventListener('resize', function() {
+      myChart.resize();
+  });
+
+
+
+
+</script>
+<script>
+    var myChart3 = echarts.init(document.getElementById('echartContainer3'));
+
+// 使用Jinja2从后端获取数据
+var dates3 = {{ timian_30[0]|tojson }};
+var values3 = {{ timian_30[1]|tojson }};
+
+var option3 = {
+    title: {
+        text: '大盘体面-30日走势'
+    },
+    tooltip: {
+        trigger: 'axis'
+    },
+    xAxis: {
+        type: 'category',
+        data: dates3
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [{
+        name: '体面值',
+        data: values3,
+        type: 'bar',
+        itemStyle: {
+            color: function(params) {
+                return params.value > 0 ? '#FF5733' : '#00A857';  // 根据值的正负来决定颜色
+            }
+        }
+    }]
+};
+
+myChart3.setOption(option3);
+
+// 窗口大小变化时，使图表自适应
+window.addEventListener('resize', function() {
+    myChart3.resize();
+});
+
+</script>
+<!-- 省略了之前的代码，仅补充最后一个<script>标签内的内容 -->
+<script>
+// 基于准备好的dom，初始化echarts实例
+var myChart5 = echarts.init(document.getElementById('echartContainer5'));
+// 提取k_data中的日期和对应的K线数据
+var k_data = {{ k_data | tojson | safe }};
+var dates = k_data[0];
+var kLineData = k_data.slice(1, 5).map(function (values, index) {
+  // 这里将每个子数组转换为ECharts需要的格式
+  return values.map(function (value, idx) {
+    return [
+      k_data[1][idx], // 开盘价
+      k_data[2][idx], // 收盘价
+      k_data[3][idx], // 最低价
+      k_data[4][idx]  // 最高价
+    ];
+  });
+})[0]; // 取map结果的第一个元素，因为我们只转换了一组数据
+
+// 提取换手率数据
+var turnoverData = k_data[5].map(function(value, idx) {
+  return {
+    value: value,
+    itemStyle: {
+      // 设置颜色与K线图一致，根据涨跌设置颜色
+      color: kLineData[idx][1] > kLineData[idx][0] ? '#ec0000' : '#00da3c',
+      color0: kLineData[idx][1] > kLineData[idx][0] ? '#00da3c' : '#ec0000'
+    }
+  };
+});
+
+// 设置K线图的配置项
+var option5 = {
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'cross'
+    }
+  },
+  grid: [
+    {
+      left: '10%',
+      right: '10%',
+      bottom: '30%',
+      top: '10%'
+    },
+    {
+      left: '10%',
+      right: '10%',
+      height: '15%', // 换手率柱状图的高度
+      bottom: '5%'
+    }
+  ],
+  xAxis: [
+    {
+      type: 'category',
+      data: dates,
+      gridIndex: 0
+    },
+    {
+      type: 'category',
+      data: dates,
+      gridIndex: 1,
+      axisLabel: { show: false } // 不显示下方X轴的标签
+    }
+  ],
+  yAxis: [
+    {
+      scale: true,
+      gridIndex: 0
+    },
+    {
+      type: 'value',
+      gridIndex: 1,
+      splitLine: { show: false } // 不显示网格线
+    }
+  ],
+  series: [
+    {
+      name: '股价K线图',
+      type: 'candlestick',
+      data: kLineData,
+      xAxisIndex: 0,
+      yAxisIndex: 0,
+      itemStyle: {
+        color: '#ec0000',
+        color0: '#00da3c',
+        borderColor: '#8A0000',
+        borderColor0: '#008F28'
+      }
+    },
+    {
+      name: '换手率%',
+      type: 'bar',
+      data: turnoverData,
+      xAxisIndex: 1,
+      yAxisIndex: 1,
+      gridIndex: 1
+    }
+  ]
+};
+
+// 使用刚指定的配置项和数据显示图表。
+myChart5.setOption(option5);
+
+// 窗口大小变化时，使图表自适应
+window.addEventListener('resize', function() {
+  myChart5.resize();
+});
+</script>
+
+
+
+
+
+</html>
+{% endblock %}

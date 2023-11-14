@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block page_content %}
+<head>
+    <style>
+
+        .mdui-flex {
+    display: flex;
+}
+
+    </style>
+</head>
+<div class="mdui-container mdui-m-t-2">
+    <div class="mdui-row">
+        <div class="mdui-card">
+            <!-- Flexbox container -->
+            <div class="mdui-flex">
+                <!-- Left content: Text information -->
+                <div class="mdui-col-md-6 mdui-col-sm-6">
+                    <div class="mdui-card-primary">
+                        <a class="mdui-card-primary-title"><B>{{ zhifudaima_info.name }}</B></a>
+                        <div class="mdui-card-primary-subtitle">{{zhifudaima_info.code }}</div>
+                    </div>
+                    <div class="mdui-card-content">
+                        <p>行业: {{ zhifudaima_info.business }}</p>
+                        <p>运营: {{ zhifudaima_info.main_business }}</p>
+                        <p>总市值: {{ zhifudaima_info.all_value }}</p>
+                        <p>流通市值: {{ zhifudaima_info.flow_value }}</p>
+                         <p>60日涨跌幅: {{ zhifudaima_info.updown_60day.iloc[0] }}%</p>
+                    </div>
+                </div>
+                <!-- Right content: Image -->
+                <div class="mdui-col-md-6 mdui-col-sm-6">
+                    <div class="mdui-card-media">
+                        <img src="data:image/png;base64,{{zhifudaima_info.img}}" alt="用户图片" style="max-width: 100%; height: auto;"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mdui-m-t-3">
+        <a onclick="goBack()" class="mdui-btn mdui-btn-raised mdui-color-theme mdui-ripple">返回上一页</a>
+    </div>
+</div>
+<script>
+function goBack() {
+    window.history.back();
+}
+</script>
+{% endblock %}

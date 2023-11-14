@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+
+<html lang="en">
+<head>
+<!-- ElementUI CSS -->
+<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+<!-- Vue.js -->
+<script src="https://unpkg.com/vue@2.6.14/dist/vue.js"></script>
+<!-- ElementUI JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/mdui@2.0.1/mdui.css">
+<script src="https://unpkg.com/mdui@2.0.1/mdui.global.js"></script>
+  <style>
+
+  /* 增加联级栏的下外边距 */
+#self {
+    margin-bottom: 50px; /* 或者您想要的空隙大小 */
+}
+    .green-text {
+      color: green;
+    }
+    .upload-container {
+      border: 2px dashed #ccc;
+      border-radius: 5px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .upload-container.dragover {
+      border-color: #000;
+    }
+
+  </style>
+  <meta charset="UTF-8">
+  <title>股票大数据可视化</title>
+</head>
+<body>
+<div class="mdui-container">
+    <div class="mdui-card">
+        <div class="mdui-card-header">
+            <img class="mdui-card-header-avatar" src="{{ url_for('static', filename='reference/气质5.jpg') }}"/>
+            <div class="mdui-card-header-title">登录信息系统</div>
+            <div class="mdui-card-header-subtitle">Login  System</div>
+        </div>
+        <table class="mdui-table mdui-table-hoverable">
+            <thead>
+                <tr>
+                    <th>管理员账号与密码输入</th>
+
+                </tr>
+            </thead>
+        </table>
+        <!-- Image container -->
+        <div class="mdui-row">
+            <div class="mdui-col-xs-12">
+                <div class="mdui-container">
+    <form action="{{ url_for('login') }}" method="post">
+
+<!--        <mdui-list-item>管理员大大-->
+<!--    <mdui-avatar slot="icon" src="https://avatars.githubusercontent.com/u/3030330?s=40&v=4"></mdui-avatar>-->
+<!--  </mdui-list-item>-->
+
+        <div class="mdui-textfield mdui-textfield-floating-label">
+
+            <label class="mdui-textfield-label" for="username">Username</label>
+            <input class="mdui-textfield-input" type="text" name="username" required />
+        </div>
+        <div class="mdui-textfield mdui-textfield-floating-label">
+            <label class="mdui-textfield-label" for="password">Password</label>
+            <input class="mdui-textfield-input" type="password" name="password" required />
+        </div>
+       <mdui-button end-icon="arrow_forward" type="submit">提交</mdui-button>
+    </form>
+</div>
+<div></div>
+ </div>
+            </div>
+        </div>
+    </div>
+</body>
+<!-- Vue 和 Element UI 的脚本 -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+</html>
+{% endblock %}

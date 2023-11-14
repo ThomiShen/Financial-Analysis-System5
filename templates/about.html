@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block page_content %}
+<head>
+
+    <style>
+
+    </style>
+</head>
+    <div class="mdui-container mt-4">
+            <div class="mdui-col-md-6 mdui-col-offset-md-3">
+                <div class="mdui-card">
+                    <div class="mdui-card-media">
+                        <img src="{{ url_for('static', filename='reference/大美女1.jpg') }}" alt="About Us Banner">
+                        <div class="mdui-card-media-covered">
+                            <div class="mdui-card-primary">
+                                <div class="mdui-card-primary-title">关于我们</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mdui-card-content">
+                        <p>我们是Financial Analysis System，致力于为您提供最佳的赌狗体验！</p>
+                        <p>从致富代码推荐到杭州第七人民医院推荐，我们提供了一系列的功能，帮助您更好地理解和管理您的孤掷一注。</p>
+                        <p>我们的团队是一群热衷于技术的年轻人，我们相信技术可以带来更好的赌博体验。</p>
+                    </div>
+                        <!-- 高德地图容器 -->
+                    <div class="mdui-m-t-4" style="width:100%;height:400px;" id="amapContainer"></div>
+                </div>
+            </div>
+
+
+    <!-- 引入高德地图JS库 -->
+    <script src="https://webapi.amap.com/maps?v=1.4.15&key=699da51f64133e1bba9e97daa4e61544"></script>
+    <script>
+        var map = new AMap.Map('amapContainer', {
+            resizeEnable: true,
+            center: [120.1134049956513,30.270508487612414], // 浙江商业职业学院的大致坐标
+            zoom: 24
+        });
+
+        // 在地图上添加标记
+        var marker = new AMap.Marker({
+            position: map.getCenter(),
+            title: '浙江商业职业学院'
+        });
+        marker.setMap(map);
+    </script>
+
+
+    </div>
+{% endblock %}
+
