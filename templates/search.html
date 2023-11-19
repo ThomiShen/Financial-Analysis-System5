@@ -113,8 +113,7 @@ width: 48%;  /* slightly less than half to account for any potential padding/mar
             </div>
              <!-- 左下 -->
             <div class="flex-box mdui-card blur-effect">
-                <div  style="width: 100%;height:100%;"><p>{{k_data}}</p>
-                <p>{{closing_prices4 }}</p></div>
+                 <div id="echartContainer4" style="width: 100%;height:100%;"></div>
             </div>
             <!-- 右下 -->
             <div class="flex-box mdui-card blur-effect">
@@ -286,6 +285,63 @@ window.addEventListener('resize', function() {
 </script>
 <!-- 省略了之前的代码，仅补充最后一个<script>标签内的内容 -->
 <script>
+    // 基于准备好的dom，初始化echarts实例
+var myChart4 = echarts.init(document.getElementById('echartContainer4'));
+
+// 日期和价格数据
+var dates = {{ date4|tojson }};
+var prices = {{ closing_prices4|tojson }};
+
+// 实际值和预测值的分界线索引，这里假设最后5个是预测值
+var splitIndex = prices.length - 5;
+
+// 数据点样式的数组，普通数据点使用蓝色，预测数据点使用半透明红色
+var dataWithStyle = prices.map(function(price, index) {
+    var isPredicted = index >= splitIndex;
+    return {
+        value: price,
+        itemStyle: {
+            color: isPredicted ? 'rgba(255, 0, 0, 0.5)' : 'blue'
+        },
+
+    };
+});
+
+// ECharts 配置
+var option = {
+title: {
+        text: '未来5日股价预测分析'
+    },
+    tooltip: {
+        trigger: 'axis'
+    },
+    xAxis: {
+        type: 'category',
+        data: dates
+    },
+    yAxis: {
+        type: 'value'
+    },
+    series: [{
+        name: '股价',
+        data: dataWithStyle,
+        type: 'line',
+        smooth: true, // 添加此行代码使线条光滑
+
+    }]
+};
+
+// 使用刚指定的配置项和数据显示图表。
+myChart4.setOption(option);
+
+// 窗口大小变化时，使图表自适应
+window.addEventListener('resize', function() {
+    myChart4.resize();
+});
+
+</script>
+
+<script>
 // 基于准备好的dom，初始化echarts实例
 var myChart5 = echarts.init(document.getElementById('echartContainer5'));
 // 提取k_data中的日期和对应的K线数据
@@ -317,6 +373,9 @@ var turnoverData = k_data[5].map(function(value, idx) {
 
 // 设置K线图的配置项
 var option5 = {
+title: {
+        text: '股票30日交易情况'
+    },
   tooltip: {
     trigger: 'axis',
     axisPointer: {
@@ -394,9 +453,6 @@ window.addEventListener('resize', function() {
   myChart5.resize();
 });
 </script>
-
-
-
 
 
 </html>

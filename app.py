@@ -3,9 +3,7 @@ app = Flask(__name__)
 from flask_session import Session
 from NoteSQL import NoteSql
 import pandas as pd
-from  datetime import datetime
 import os
-from docx import Document
 from cut import StockInfoExtractor
 import akshare as ak
 import zhifu
@@ -18,9 +16,9 @@ from search import Search
 from test import chat_with_spark
 from flask import jsonify
 import transform
+from transform import future_days
 from face import FaceAnalysis
-from news import CCTVNewsFetcher,CarsFetcher,AirFetcher
-from jinja2 import Environment
+from news import CCTVNewsFetcher,CarsFetcher,AirFetcher,WeiboFetcher
 app.jinja_env.add_extension('jinja2.ext.do')
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -29,13 +27,13 @@ app.config['SESSION_TYPE'] = 'filesystem'  # 使用文件系统来存储session�
 app.config['SESSION_FILE_DIR'] = 'static/flask_session/'  # session文件的存储路径
 Session(app)
 #PDF处理
-def extract_text_from_pdf(pdf_path):
-    with open(pdf_path, 'rb') as file:
-        reader = PyPDF2.PdfReader(file)
-        text = ""
-        for page_num in range(len(reader.pages)):
-            text += reader.pages[page_num].extract_text()
-    return text
+# def extract_text_from_pdf(pdf_path):
+#     with open(pdf_path, 'rb') as file:
+#         reader = PyPDF2.PdfReader(file)
+#         text = ""
+#         for page_num in range(len(reader.pages)):
+#             text += reader.pages[page_num].extract_text()
+#     return text
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -44,7 +42,8 @@ def index():
             # 处理文本内容
             content = text_content
             cut = StockInfoExtractor()
-            result = cut.get_stock_details(content)
+            result0 = cut.get_stock_details(content)
+            result=cut.k_line(result0)
             # 将股票按照行业分类
             industry_dict = {}
             for stock in result:
@@ -59,13 +58,13 @@ def index():
 @app.route('/about')
 def about():
     return render_template('about.html')
+#######股票可视化选择展现
 @app.route('/visualization',methods=['GET', 'POST'])
 def visualization():
     if request.method == 'POST':
         selected_stocks = request.form.getlist('selected_stocks')
         stock_set=[]
         # Get start_date from the session
-        start_date = session.get('start_date', None)
         for stock in selected_stocks:
             big_timian_20 = BigTimian_20(stock)
             bigtimian_score_20=big_timian_20.get_combined_data()
@@ -73,12 +72,7 @@ def visualization():
             bigtimian_score_5=big_timian_5.get_combined_data()
             zhifudaima_info = zhifu.zhifu_info(stock)
             # 将所有的 Series 对象转换为 list
-            for key, value in zhifudaima_info.items():
-                if isinstance(value, pd.Series):
-                    zhifudaima_info[key] = value.tolist()
-            ssss=StockKLinePlotter()
-            img =ssss.get_k_line_plot_base64_start(stock, start_date)
-            stock_set.append([zhifudaima_info,img,bigtimian_score_20,bigtimian_score_5])
+            stock_set.append([zhifudaima_info,bigtimian_score_5,bigtimian_score_20])
 
         # Store the stock_set in the session
         session['stock_set'] = stock_set
@@ -105,6 +99,11 @@ def search():
     query=request.args.get('query')
     search=Search(query)
     query=search.process_input()
+    if "error" in query:
+        # 使用 flash 函数来显示错误信息
+        flash('error')
+        # 重定向回原来的页面或其他页面
+        return redirect(request.referrer)  # 重定向回原页面
     s_timian_20 = BigTimian_20(query["代码"])
     s_score_20 = s_timian_20.get_combined_data()
     s_timian_5 = BigTimian_5(query["代码"])
@@ -141,14 +140,18 @@ def search():
     timian_30.append(dates3)
     timian_30.append(value3)
     #transformer操作阶段，先获取30日数据
+    df4_date = ak.stock_zh_a_hist(symbol=query["代码"], period="daily").tail(30)
+    date4 = [date.strftime('%Y-%m-%d') for date in df4_date["日期"]]
     df4=SZZS.gegu(query["代码"])
     closing_prices4 = df4["收盘"].tolist()
     trained_model=transform.train_stock_price_model(closing_prices4)
     future_predictions=transform.predict_future_stock_prices(closing_prices4,trained_model)
+    future_5days=future_days()
+    date4=date4+future_5days
+    closing_prices4=closing_prices4+future_predictions
     # K线图  基于pyecharts画法
     k_data=[]
     df5 = ak.stock_zh_a_hist(symbol=query["代码"], period="daily").tail(30)
-
     date5 = [date.strftime('%Y-%m-%d') for date in df5["日期"]]
     open_price5 = df5["开盘"].tolist()
     close_price5 = df5["收盘"].tolist()
@@ -161,7 +164,7 @@ def search():
         # k_data.append(k_)
     return render_template('search.html',round=round,query=query,score_20=s_score_20,
     score_5=s_score_5,zs=zs,gegu=gegu,timian_30=timian_30,closing_prices4=closing_prices4,
-    future_predictions=future_predictions,k_data=k_data)
+    date4=date4,k_data=k_data)
 
 
 @app.route('/zhifudaima', methods=['GET', 'POST'])
@@ -183,6 +186,7 @@ def chat():
 def face():
     if request.method == 'POST':
         # 获取上传的图片文件
+
         image_file = request.files['image']
         # 获取名字处理
         # 保存图片到上传文件夹
@@ -203,9 +207,35 @@ def face():
         beauty = face_features['beauty']
         gender = face_features['gender']['type']
         face_shape = face_features['face_shape']['type']
-
+        face_shape_translation = {
+            "square": "方形脸",
+            "triangle": "瓜子脸",
+            "oval": "长圆脸",
+            "round":"圆形脸",
+            "heart":"心形脸"
+        }
+        face_shape = face_shape_translation[face_shape]
+        glasses = face_features['glasses']['type']
+        glasses_translation = {
+            "none": "无眼镜",
+            "common": "普通眼镜",
+            "sun": "太阳眼镜"
+        }
+        glasses = glasses_translation[glasses]
+        emotion = face_features['emotion']['type']
+        emotion_translation = {
+            "angry": "生气气",
+            "disgust": "抖S",
+            "fear": "小胆子",
+            "happy": "喜悦",
+            "sad": "忧伤",
+            "surprise": "惊呆",
+            "neutral": "高冷",
+            "grimace": "爱说笑"
+        }
+        emotion = emotion_translation[emotion]
         return render_template('face_result.html', age=age,beauty=beauty, gender=gender, face_shape=face_shape,
-                               image_url=image_url)
+                               image_url=image_url,glasses=glasses,emotion=emotion)
     return render_template('face.html')
 
 @app.route('/hr', methods=['GET', 'POST'])
@@ -273,7 +303,11 @@ def news():
     # 将DataFrame转换为字典列表
     airs_data = airs.values.tolist()
     air_map=fetcher_air.create_map()
-    return render_template('news.html',news=news_data,cars=cars_data,airs=airs_data,maps=air_map)
+    fetcher_weibo=WeiboFetcher()
+    news=fetcher_weibo.fetch_weibo()
+    # 将DataFrame转换为字典列表
+    weibo=news[3].values.tolist()
+    return render_template('news.html',news=news_data,cars=cars_data,airs=airs_data,maps=air_map,weibo=weibo)
 
 #进行NOTE操作！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
 @app.route('/note',methods=['GET', 'POST'])
@@ -321,6 +355,33 @@ def zhifudaima_detail(zhifudaima_code):
     #股票代码查找股票的详细信息
     zhifudaima_info = zhifu.zhifu_info(zhifudaima_code)
     return render_template('zhifudaima_detail.html', zhifudaima_info=zhifudaima_info)
+
+#############Audio
+@app.route('/audio',methods=['GET', 'POST'])
+def audio():
+    return render_template('audio.html')
+
+#############Photo
+@app.route('/photo',methods=['GET', 'POST'])
+def photo():
+    photo_directory = os.path.join(app.static_folder, 'photo')
+    photos = [os.path.join('photo', filename) for filename in os.listdir(photo_directory) ]
+    return render_template('photo.html',photos=photos)
+
+#############FunKtion信息聚合操作
+@app.route('/function',methods=['GET', 'POST'])
+def function():
+    return render_template('function.html')
+
+############美颜功能操作
+@app.route('/easthetic',methods=['GET', 'POST'])
+def easthetic():
+    return render_template('easthetic.html')
+
+############爱恋婚姻功能操作
+@app.route('/love',methods=['GET', 'POST'])
+def love():
+    return render_template('love.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

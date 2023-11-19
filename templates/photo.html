@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block page_content %}
+<html lang="en">
+<head>
+<script src="https://cdn.jsdelivr.net/npm/lazysizes@5.3.2/lazysizes.min.js" async=""></script>
+
+    <style>
+/* 初始样式：图片透明且略有缩小 */
+.lazyload {
+    opacity: 0.3;
+    transform: scale(0.5);
+    transition: opacity 0.5s ease-in;
+}
+
+/* 当图片加载完毕，透明度变为1，恢复原始大小 */
+.lazyloaded {
+    opacity: 1;
+    transform: scale(1);
+}
+
+  .waterfall {
+    column-gap: 10px;
+}
+
+.waterfall .mdui-col-xs-12 {
+    break-inside: avoid;
+    margin-bottom: 10px;
+}
+
+    </style>
+</head>
+<body>
+<div class="mdui-container">
+    <div class="mdui-row waterfall">  <!-- 为每一行添加下边距 -->
+        {% for photo in photos %}
+            <div class="mdui-col-xs-12 mdui-col-sm-6" style="padding: 5px;">  <!-- 为每个项目添加内边距 -->
+                <div class="mdui-card mdui-hoverable mdui-ripple" style="margin-bottom: 10px;">
+                    <div class="mdui-card-media">
+                        <img data-src="{{ url_for('static', filename=photo)}}" class="lazyload"  />  <!-- 使图片宽度为100%且不留空隙 -->
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>
+{% endblock %}

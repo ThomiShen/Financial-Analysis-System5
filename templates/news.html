@@ -4,6 +4,41 @@
 <html lang="en" >
 <head>
     <style>
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* 创建一个响应式的 N×N 网格 */
+    gap: 3px; /* 格子之间的间隔 */
+}
+.grid-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: white;
+    font-weight: bold;
+    border-radius: 3px; /* 圆角边框 */
+}
+/* 为正数指数的行设置样式 */
+.positive {
+    background-color: #ef9a9a; /* 亮红色 */
+}
+
+/* 为负数指数的行设置样式 */
+.negative {
+    background-color: #a5d6a7; /* 亮绿色 */
+}
+
+.stock-name {
+    font-weight: bold;
+}
+
+.stock-index {
+    font-weight: normal;
+    color: #333; /* 或者根据背景颜色调整字体颜色 */
+}
+
+
         .green-text {
             color: green;
         }
@@ -114,7 +149,30 @@ document.querySelectorAll('.open-dialog-button').forEach(button => {
         </table>
     </div>
 </div>
-    <div id="weibos" class="content-section" style="display: none;">微博舆论内容...</div>
+    <div id="weibos" class="content-section" style="display: none;">
+        <!-- 根据实际 DataFrame 的列名添加表头 -->
+        <table class="mdui-table mdui-table-hoverable">
+             <!-- 表头 -->
+            <thead>
+                <tr>
+                    <th>微博舆情股票热点指数</th>
+                </tr>
+            </thead>
+        </table>
+             <!-- 表内容 -->
+        <div class="grid-container">
+              {% for df in weibo %}
+                <div  class="grid-item {{ 'positive' if df[1] >= 0 else 'negative' }}">
+                    <span class="stock-name">{{ df[0] }}</span>
+                    <span class="stock-index">{{ df[1] }}%</span>
+                </div>
+              {% endfor %}
+        </div>
+
+
+
+
+    </div>
     <div id="airs" class="content-section" style="display: none;">
          <div class="mdui-row">
         <table class="mdui-table mdui-table-hoverable">

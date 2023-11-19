@@ -61,7 +61,9 @@
   <mdui-button-icon icon="menu" class="open3" value="item-2"></mdui-button-icon>
   <mdui-button-icon icon="search" id="searchButton"></mdui-button-icon>
   <mdui-button-icon icon="mic"></mdui-button-icon>
-  <mdui-button-icon icon="image"></mdui-button-icon>
+  <mdui-button-icon href="{{url_for('photo')}}" icon="image"></mdui-button-icon>
+   <mdui-button-icon href="{{url_for('audio')}}" icon="play_circle_outline"></mdui-button-icon>
+     <mdui-button-icon  icon="language" id="languageToggle"></mdui-button-icon>
   <div style="flex-grow: 1"></div>
   <mdui-fab icon="add"></mdui-fab>
  <div id="searchCard" class="mdui-card" style="display:none;">
@@ -80,19 +82,46 @@
  <mdui-navigation-bar value="item-1"
     scroll-behavior="hide">
   <mdui-navigation-bar-item icon="home" href="{{ url_for('index') }}" value="item-1">Home</mdui-navigation-bar-item>
-  <mdui-navigation-bar-item icon="menu" class="open2" value="item-2">Funktion</mdui-navigation-bar-item>
+  <mdui-navigation-bar-item icon="present_to_all"  href="{{ url_for('function') }}" value="item-2">Funktion</mdui-navigation-bar-item>
   <mdui-navigation-bar-item icon="book"  href="{{ url_for('news') }}"value="item-3">News</mdui-navigation-bar-item>
   <mdui-navigation-bar-item icon="info" href="{{ url_for('about') }}" value="item-3">Info</mdui-navigation-bar-item>
 </mdui-navigation-bar>
 
 <mdui-top-app-bar >
-<!--     <mdui-button class="open1">打开侧边抽屉栏</mdui-button>-->
-    <mdui-top-app-bar-title>Finance Analysis System</mdui-top-app-bar-title>
-  <div style="flex-grow: 1"></div>
-   <a href="javascript:;" id="musicIconBtn" class="mdui-btn mdui-btn-icon mdui-ripple mdui-hidden-xs-down"><i class="mdui-icon material-icons">music_note</i></a>
-    <a href="{{url_for('about')}}" class="mdui-btn mdui-btn-icon mdui-ripple mdui-hidden-xs-down"><i class="mdui-icon material-icons">info</i></a>
-    <!--        ########searchCard-->
 
+<mdui-top-app-bar-title>Finance Analysis System</mdui-top-app-bar-title>
+  <div style="flex-grow: 1"></div>
+<mdui-dialog close-on-overlay-click class="example-dialog">
+希望看到了可以推荐给其他人哦！爱你啊！！！(✪ω✪)
+    <div class="mdui-card-media">
+                        <img src="{{ url_for('static', filename='reference/蔡徐坤.jpeg') }}" alt="About Us Banner">
+                        <div class="mdui-card-media-covered">
+                            <div class="mdui-card-primary">
+                                <div class="mdui-card-primary-title">么么哒😘</div>
+                            </div>
+                        </div>
+   </div>
+</mdui-dialog>
+<a   class="mdui-btn mdui-btn-icon mdui-ripple" ><i class="mdui-icon material-icons">share</i></a>
+
+
+<script>
+  const dialog = document.querySelector(".example-dialog");
+  const openButton = dialog.nextElementSibling;
+  const closeButton = dialog.querySelector("a");
+  openButton.addEventListener("click", () => dialog.open = true);
+  closeButton.addEventListener("click", () => dialog.open = false);
+</script>
+
+
+ <a   class="mdui-btn mdui-btn-icon mdui-ripple " mdui-dialog="{target: '#exampleDialog'}"><i class="mdui-icon material-icons">info_outline</i></a>
+  <div class="mdui-dialog" id="exampleDialog">
+     <div class="mdui-dialog-title">欢迎访问金融管理信息系统</div>
+      <div class="mdui-dialog-content">这是一个可以查询股票致富代码分析、股票可视化分析、颜值分析、听歌、看图片、写简历、写文章、人机对话、查询金融信息的综合平台,接下来可能会进行开发N/P情感分析预测、Transformer股价预测模型分析/相亲专栏等功能！本身作为老师，断断续续写这个小程序，一开始这是同事说测颜值，便开始python代码编写发展到现在。如今版本为4.8version，计划未来打包为安卓小软件！</div>
+       <div class="mdui-dialog-actions">
+        <button class="mdui-btn mdui-ripple" mdui-dialog-close>感谢关注！</button>
+      </div>
+    </div>
 </mdui-top-app-bar>
 
 
@@ -120,6 +149,12 @@
                 <a href="{{url_for('note_show')}}" class="mdui-list-item mdui-ripple">Show</a>
             </div>
         </li>
+
+        <!-- ######## ################音乐播放 ######## ######## ######## ######## ########-->
+          <li class="mdui-list-item mdui-ripple"  >
+            <i class="mdui-list-item-icon mdui-icon material-icons">play_circle_filled</i>
+            <a  href="{{url_for('audio')}}" class="mdui-list-item-content">Audio</a>
+         </li>
         <!-- 音乐下拉菜单部分 -->
         <li class="mdui-collapse-item mdui-ripple">
             <div class="mdui-collapse-item-header mdui-list-item mdui-ripple">
@@ -127,12 +162,17 @@
                 <div class="mdui-list-item-content">Musik</div>
                 <i class="mdui-collapse-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
             </div>
+            <!-- 背景音乐播放器 -->
+<audio id="backgroundMusic" controls style="display:none;">
+    <source id="musicSource" type="audio/mp3">
+</audio>
             <div class="mdui-collapse-item-body mdui-list">
-                <a href="javascript:;" class="mdui-list-item mdui-ripple" data-src="{{ url_for('static', filename='audio/光的方向.mp3') }}">光的方向</a>
-                <a href="javascript:;" class="mdui-list-item mdui-ripple" data-src="{{ url_for('static', filename='audio/天后.mp3') }}">天后</a>
-                <a href="javascript:;" class="mdui-list-item mdui-ripple" data-src="{{ url_for('static', filename='audio/消失的她.mp3') }}">消失的她</a>
+                <a  class="mdui-list-item mdui-ripple" onclick="playMusic('{{ url_for('static', filename='audio/光的方向.mp3') }}')">光的方向</a>
+                <a  class="mdui-list-item mdui-ripple" onclick="playMusic('{{ url_for('static', filename='audio/天后.mp3') }}')">天后</a>
+                <a  class="mdui-list-item mdui-ripple" onclick="playMusic('{{ url_for('static', filename='audio/消失的她.mp3') }}')">消失的她</a>
             </div>
-            <li class="mdui-list-item mdui-ripple"  onclick="toggleNavbarColor()">
+          <!-- 变色操作设计设计 -->
+       <li class="mdui-list-item mdui-ripple"  onclick="toggleNavbarColor()">
             <i class="mdui-list-item-icon mdui-icon material-icons">all_inclusive</i>
             <a  class="mdui-list-item-content">Change Color</a>
         </li>
@@ -189,62 +229,72 @@
 
 
 <mdui-layout-main class="example-layout-main" >
+
+      <!-- 在这里展示 flash 消息 -->
+    <!-- 用于显示 flash 消息的容器 -->
+   {%  with messages = get_flashed_messages() %}
+            {% if messages %}
+
+    <div class="mdui-card-media" id="error-dialog" style="display:block;" onclick="dismissErrorDialog()">
+              <img src="{{ url_for('static', filename='reference/表情包.png') }}" >
+     <div class="mdui-card-media-covered">
+            <div class="mdui-card-primary">
+            <div class="mdui-card-primary-title">输入错误啊！！！再试试！！！</div>
+           </div>
+    </div>
+   </div>
+            {% endif %}
+        {% endwith %}
+<script>
+    function dismissErrorDialog() {
+        var dialog = document.getElementById('error-dialog');
+        if (dialog) {
+            dialog.style.display = 'none';
+        }
+    }
+</script>
     {% block page_content %}{% endblock %}
 </mdui-layout-main>
 
  </mdui-layout>
+ <div class="mdui-card-content mdui-shadow-0 mdui-p-a-5">
+    <div class="mdui-container">
+        <div class="mdui-row-sm-3 k-footer-sns">
+            <div class="mdui-col">
+                <div class="mdui-row">
+                    <div class="mdui-col-xs-4 mdui-col-sm-3 mdui-col-md-2 ">
+                        <a href="https://www.zust.edu.cn/">
+                                <i class="mdui-icon material-icons">school</i>
+                        </a>
+                    </div>
+                    <div class="mdui-col-xs-4 mdui-col-sm-3 mdui-col-md-2 ">
+                        <a href="https://mail.qq.com">
+                            <i class="mdui-icon material-icons">contact_mail</i>
+                        </a> </div>
+                    <div class="mdui-col-xs-4 mdui-col-sm-3 mdui-col-md-2 ">
+                        <a href="https://www.bi-analysis.com.cn/">
+            <i class="mdui-icon material-icons">polymer</i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mdui-col mdui-text-center" style="line-height:48px">China/Zhejiang Copyright ©<script>var fd=new Date;document.write("&nbsp;"+fd.getFullYear()+"&nbsp;")</script>&nbsp;&nbsp; ThomiSHEN </div> <div class="mdui-col mdui-text-center mdui-typo">
+            <div>Powered by <a href="https://github.com/ThomiShen/">Thomi</a></div> <div>Theme <a href="https://github.com/ThomiShen/Financial-Analysis-System4">Thomi SHEN FAS</a></div> </div> </div> </div> </div>
+<script>
+    // 播放音乐的函数
+    function playMusic(src) {
+        var audioPlayer = document.getElementById('backgroundMusic');
+        audioPlayer.src = src;
+        audioPlayer.play();
+    }
+
+</script>
 
 
-<audio id="audioPlayer" style="display:none;" data-current-index="0">
-    <source id="audioSource" src="" type="audio/mp3">
-</audio>
+
 <script>
 //为了确保它被初始化，可以在 JavaScript 中明确地这样做new mdui.Collapse('.mdui-collapse');
 new mdui.Collapse('.mdui-collapse');
-document.addEventListener("DOMContentLoaded", function() {
-    // 初始化侧边栏
-    var inst = new mdui.Drawer('#drawer');
-
-    // 初始化下拉菜单
-    const collapse = new mdui.Collapse('#songs-collapse-item');
-    // 为歌曲列表项添加点击事件，点击时播放歌曲
-    document.querySelectorAll('.mdui-collapse-item-body .mdui-list-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const audioSrc = item.getAttribute('data-src');
-            document.getElementById('audioSource').src = audioSrc;
-            const audioPlayer = document.getElementById('audioPlayer');
-            audioPlayer.load();
-            audioPlayer.play();
-        });
-    });
-
-    // 获取音乐按钮和音乐播放器
-    const musicIconBtn = document.getElementById('musicIconBtn');
-    const audioPlayer = document.getElementById('audioPlayer');
-
-    // 定义歌曲列表
-    const songs = [
-        "{{ url_for('static', filename='audio/光的方向.mp3') }}",
-        "{{ url_for('static', filename='audio/天后.mp3') }}",
-        "{{ url_for('static', filename='audio/消失的她.mp3') }}"
-    ];
-
-    // 添加点击事件监听器
-    musicIconBtn.addEventListener('click', function() {
-        // 获取当前歌曲索引
-        let currentIndex = parseInt(audioPlayer.getAttribute('data-current-index'), 10);
-
-        // 切换到下一首歌
-        currentIndex = (currentIndex + 1) % songs.length;
-        document.getElementById('audioSource').src = songs[currentIndex];
-        audioPlayer.setAttribute('data-current-index', currentIndex);
-
-        // 重新加载并播放
-        audioPlayer.load();
-        audioPlayer.play();
-    });
-});
-
 
  function toggleNavbarColor() {
         const navbar = document.querySelector(".mdui-toolbar");
@@ -267,12 +317,19 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
-document.getElementById('submitSearch').addEventListener('click', function() {
+ // 通过点击按钮进行搜索
+    document.getElementById('submitSearch').addEventListener('click', submitSearch);
+// 搜索函数
+function submitSearch() {
     const query = document.getElementById('searchInput').value;
-
-    // 将查询发送到后端 (这里假设你的后端URL是 /search，并期望一个名为query的查询参数)
-    window.location.href = `/search?query=${query}`;
-});
+    window.location.href = `/search?query=${encodeURIComponent(query)}`; // 使用 encodeURIComponent 以确保查询参数被正确编码
+}
+// 通过按下 Enter 键进行搜索
+    document.getElementById('searchInput').addEventListener('keydown', function(event) {
+        if (event.keyCode === 13 || event.which === 13) { // 13 是 Enter 键的键码
+            submitSearch();
+        }
+    });
 
 </script>
 <!--    导航栏开关-->
@@ -299,6 +356,57 @@ document.getElementById('submitSearch').addEventListener('click', function() {
   openButton3.addEventListener("click", () => navigationDrawer3.open = true);
 
 </script>
+
+
+<script>
+
+ // 中英文文本映射
+const languageMap = {
+    'Home': {'en': 'Home', 'zh': '首页'},
+    'Notes': {'en': 'Notes', 'zh': '笔记'},
+    'Login': {'en': 'Login', 'zh': '登录'},
+    'Audio': {'en': 'Audio', 'zh': '音乐'},
+    'Musik': {'en': 'Musik', 'zh': '背景音乐'},
+    'Show': {'en': 'Show', 'zh': '文章展示'},
+    'Change Color': {'en': 'Change Color', 'zh': '变色'},
+    'Visualization': {'en': 'Visualization', 'zh': '股票可视化'},
+    'Trend': {'en': 'Trend', 'zh': '股票趋势'},
+    'Chat': {'en': 'Chat', 'zh': '聊天'},
+    'Face Recognition': {'en': 'Face Recognition', 'zh': '人脸识别'},
+    'Chat': {'en': 'Chat', 'zh': '聊天'},
+    'HR System': {'en': 'HR System', 'zh': 'HR系统'},
+    'News': {'en': 'News', 'zh': '新闻'},
+    'Information': {'en': 'Information', 'zh': '信息'},
+    'about us': {'en': 'about us', 'zh': '关于我们'}
+};
+// 当前语言状态
+let currentLanguage = 'en';
+
+// 切换语言的函数
+function toggleLanguage() {
+    // 切换当前语言状态：如果当前是英文，则切换到中文，反之亦然
+    currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
+
+    // 选择页面上所有带有 'mdui-list-item-content' 类的元素
+    document.querySelectorAll('.mdui-list-item-content').forEach(item => {
+        // 遍历 languageMap 的每个键（key）
+        for (let key in languageMap) {
+            // 检查当前元素的文本是否与 languageMap 中当前语言的某个值匹配
+            if (item.textContent.trim() === languageMap[key][currentLanguage === 'en' ? 'zh' : 'en']) {
+                // 如果匹配，更新该元素的文本为新的语言（currentLanguage）下对应的文本
+                item.textContent = languageMap[key][currentLanguage];
+                break; // 找到匹配后，跳出循环
+            }
+        }
+    });
+}
+
+// 绑定点击事件到语言切换按钮
+document.getElementById('languageToggle').addEventListener('click', toggleLanguage);
+
+
+</script>
+
     </div>
 </body>
 </html>

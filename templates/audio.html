@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block page_content %}
+<head>
+<!-- APlayer CSS -->
+<link rel="stylesheet"href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+  <!-- APlayer JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+    <style>
+
+    </style>
+</head>
+    <div class="mdui-container mt-4">
+            <div class="mdui-col-md-6 mdui-col-offset-md-3">
+                <div class="mdui-card">
+                    <div class="mdui-card-media">
+                        <img src="{{ url_for('static', filename='reference/音乐封面.jpeg') }}" alt="About Us Banner">
+                        <div class="mdui-card-media-covered">
+                            <div class="mdui-card-primary">
+                                <div class="mdui-card-primary-title">音乐播放MUSIK</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="aplayer" class="mdui-img-fluid">
+
+                </div>
+            </div>
+    </div>
+
+    </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ap = new APlayer({
+            container: document.getElementById('aplayer'),
+            listFolded: false,
+            audio: [
+                {
+                    name: '光的方向',
+                    artist: '张碧晨',
+                    url: '{{ url_for("static", filename="audio/光的方向.mp3") }}',
+                    cover: '{{ url_for("static", filename="reference/大美女1.jpg") }}'
+                },
+                     {
+                    name: '天后',
+                    artist: '陈势安',
+                    url: '{{ url_for("static", filename="audio/天后.mp3") }}',
+                    cover: '{{ url_for("static", filename="reference/大美女2.jpg") }}'
+                },
+                     {
+                    name: '消失的她',
+                    artist: '张碧晨',
+                    url: '{{ url_for("static", filename="audio/消失的她.mp3") }}',
+                    cover: '{{ url_for("static", filename="reference/大美女3.jpg") }}'
+                }
+                // 更多歌曲...
+            ]
+        });
+    });
+</script>
+
+
+
+{% endblock %}

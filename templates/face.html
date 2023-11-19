@@ -3,6 +3,7 @@
 {% block page_content %}
 <html lang="en">
 <head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
   <style>
     .green-text {
       color: green;
@@ -58,8 +59,19 @@
             <input type="file" name="image" accept="image/*" id="fileInput">
           </form>
         </div>
+        <!-- 隐藏的文件输入元素 -->
+<!-- 隐藏的文件输入元素 -->
+<input type="file" id="cameraInput" name="image" accept="image/*" capture="user" style="display: none;"  onchange="submitPhoto()">
+ <mdui-button  style="width: 100%;" id="PhotoButton"   onclick="document.getElementById('cameraInput').click();">
+  自拍/PHOTO
+  <mdui-icon slot="icon" name="downloading"></mdui-icon>
+  <mdui-icon slot="end-icon" name="attach_file"></mdui-icon>
+</mdui-button>
 
-        <script>
+    </div>
+</div>
+</body>
+<script>
           const uploadContainer = document.getElementById('uploadContainer');
           const fileInput = document.getElementById('fileInput');
           uploadContainer.addEventListener('click', () => fileInput.click());
@@ -86,8 +98,17 @@
             form.submit();
           });
         </script>
-    </div>
-</div>
-</body>
+<script>
+  function submitPhoto() {
+        const form = document.getElementById('fileUploadForm');
+        const cameraInput = document.getElementById('cameraInput');
+        const fileInput = document.getElementById('fileInput');
+
+        // 将拍摄的照片设置为表单的输入
+        fileInput.files = cameraInput.files;
+        form.submit();
+    }
+</script>
+
 </html>
 {% endblock %}
